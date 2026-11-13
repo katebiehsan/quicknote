@@ -568,7 +568,7 @@
       '<form id="tokForm" onsubmit="return false"><input type="text" name="username" autocomplete="username" value="Quicknote" hidden>' +
       '<label for="tok">Zugangsschlüssel</label><input class="field" id="tok" name="password" type="password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="github_pat_…" value="' + esc(token) + '">' +
       '<div class="row2"><button type="submit" class="sbtn" data-a="savetok">Sichern und prüfen</button></div></form>' +
-      '<label>Stand</label><p>' + (mirrorAt ? "Zuletzt aus Second Brain: " + esc(longDate(mirrorAt)) : "Noch kein Abgleich aus Second Brain.") + "<br>Abgleich stündlich von " + SYNC_FIRST + " bis " + SYNC_LAST + " Uhr.</p></div>";
+      '<label>Stand</label><p>' + (mirrorAt ? "Zuletzt aus Second Brain: " + esc(longDate(mirrorAt)) : "Noch kein Abgleich aus Second Brain.") + "<br>Nächster Abgleich: " + esc(nextImport().replace(/^um /, "heute um ")) + " Uhr<br>Abgleich stündlich von " + SYNC_FIRST + " bis " + SYNC_LAST + " Uhr.</p></div>";
     openSheet("Einstellungen", html, "set");
   }
   async function saveToken(btn) {
