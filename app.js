@@ -293,7 +293,7 @@
   function makeRow(n) {
     const r = document.createElement("div");
     r.className = "row"; r.dataset.id = n.id;
-    r.innerHTML = '<div class="bgL">' + (n.angeheftet ? "Lösen" : "Anheften") + '</div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
+    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v7"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
     wireRow(r);
     return r;
   }
@@ -331,7 +331,7 @@
       } else {
         existing.delete(n.id);
         if (el._h !== html) { el.querySelector(".front").innerHTML = html; el._h = html; }
-        el.querySelector(".bgL").textContent = n.angeheftet ? "Lösen" : "Anheften";
+        el.querySelector(".bgL span").textContent = n.angeheftet ? "Lösen" : "Anheften";
         if (at !== el) container.insertBefore(el, at);
       }
       prev = el;
@@ -382,6 +382,7 @@
       let x = base + dx;
       if (x > 72) x = 72 + (x - 72) * 0.3;          // Widerstand statt harter Grenze
       if (x < OPEN) x = OPEN + (x - OPEN) * 0.3;
+      r.classList.toggle("arm", base === 0 && x > 56);   // Nadel springt an, sobald Loslassen anheftet
       set(x);
     });
     const up = (e) => {
@@ -390,6 +391,7 @@
       if (!horiz) return;
       f._dragged = true; setTimeout(() => { f._dragged = false; }, 50);
       const v = Math.abs(dx) / Math.max(1, Date.now() - t0), x = base + dx;
+      r.classList.remove("arm");
       if (base === 0 && (x > 56 || (v > 0.11 && dx > 16))) { snap(0); togglePin(r.dataset.id); return; }
       if (x < -48 || (v > 0.11 && dx < -16)) { snap(OPEN); openRow = r; } else { snap(0); if (openRow === r) openRow = null; }
     };

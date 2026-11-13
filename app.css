@@ -235,3 +235,10 @@ button.sh:active { transform: scale(0.98); }
 .pill.ok { color: var(--ink); }
 .pill.ok i { display: none; }
 .pill.ok .pok { display: block; animation: cb-pop 260ms var(--ease-out); }
+/* Vorschau: höchstens zwei Zeilen */
+.sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.45; }
+/* Anheften: Nadel springt an, wenn das Loslassen anheftet */
+.bgL { gap: 8px; }
+.bgL .pin { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: scale(0.9) rotate(0deg); opacity: 0.6; transition: transform 220ms var(--ease-out), opacity 160ms ease; }
+.row.arm .bgL .pin { transform: scale(1.15) rotate(-20deg); opacity: 1; }
+.row.arm .bgL .pin path:first-child { fill: currentColor; }
