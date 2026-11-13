@@ -68,7 +68,7 @@ button.sh:active { transform: scale(0.98); }
 .bgR { right: 0; }
 .bgR button { height: 100%; width: 96px; background: var(--err-bg); color: var(--err); text-align: center; }
 .row.sw-r .bgL, .row.sw-l .bgR { opacity: 1; }
-.front { position: relative; z-index: 1; background: var(--page); padding: 12px 0; touch-action: pan-y; will-change: transform; }
+.front { position: relative; z-index: 1; background: var(--page); padding: 12px 0; touch-action: pan-y; }
 .front.snap { transition: transform 240ms var(--ease-drawer); }
 .t1 { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .t1 b { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

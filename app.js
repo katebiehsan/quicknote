@@ -73,7 +73,8 @@
   /* ---------- Zustand ---------- */
   const notes = new Map();   // id -> Notiz (wie sie gerade aussieht, inkl. noch nicht übertragener Änderungen)
   const outbox = new Map();  // opId -> Änderung { opId, noteId, kind, ts, base, note, state: wait|sent, sentAt }
-  let token = "", mirrorAt = "", authBad = false, flushing = false, query = "";
+  let token = "", mirrorAt = "", authBad = false, flushing = false, query = "", inflight = null;
+  const pendingDel = new Set();  // Notizen, die gerade gelöscht werden (schon unsichtbar, Speichern läuft)
   const fresh = new Set();   // Zeilen, die beim nächsten Zeichnen einfliegen
 
   /* ---------- Text-Hilfen ---------- */
@@ -154,7 +155,8 @@
   /* ---------- Speichern: erst lokal, dann Ausgang ---------- */
   function sentFor(noteId) { return [...outbox.values()].some((o) => o.noteId === noteId && o.state === "sent"); }
   async function enqueue(kind, note, base) {
-    const prev = [...outbox.values()].find((o) => o.noteId === note.id && o.state === "wait");
+    /* Was gerade an GitHub unterwegs ist, gilt als übertragen: nicht zusammenlegen, nicht weglassen */
+    const prev = [...outbox.values()].find((o) => o.noteId === note.id && o.state === "wait" && o.opId !== inflight);
     const snap = { id: note.id, text: note.text, created: note.created, updated: note.updated, angeheftet: !!note.angeheftet };
     if (note.vorschlag) snap.vorschlag = note.vorschlag;
     /* Text, den Quicknote zuletzt aus Second Brain kannte: damit führt der Abgleich zeilenweise zusammen */
@@ -162,7 +164,7 @@
     const baseText = prev ? prev.baseText : (known && known._mt != null ? known._mt : null);
     let op = { opId: uid("op"), noteId: note.id, kind, ts: nowIso(), base: prev ? prev.base : base, baseText, note: snap, state: "wait" };
     /* Neu angelegt, noch nie übertragen und gleich wieder gelöscht: einfach weglassen */
-    const drop = kind === "delete" && prev && prev.kind === "upsert" && prev.base == null && !sentFor(note.id) && !note._m;
+    const drop = kind === "delete" && prev && prev.kind === "upsert" && prev.base == null && !sentFor(note.id) && !note._m && !(inflight && outbox.get(inflight) && outbox.get(inflight).noteId === note.id);
     if (drop) op = null;
     /* Löschen ersetzt alle älteren Schritte dieser Notiz, sonst holt ein übertragenes „Anlegen“ sie zurück */
     const older = kind === "delete" ? [...outbox.values()].filter((o) => o.noteId === note.id && o !== prev) : [];
@@ -195,17 +197,20 @@
         if (op.baseText != null) payload.baseText = op.baseText;
         const body = "<!-- quicknote -->\n```json\n" + JSON.stringify(payload, null, 1) + "\n```\n";
         let r;
+        inflight = op.opId;
         try {
           r = await fetch(API + "/issues", { method: "POST", headers: ghHeaders({ Accept: "application/vnd.github+json", "Content-Type": "application/json" }), body: JSON.stringify({ title: "qn " + op.opId, body }) });
-        } catch (e) { break; }
+        } catch (e) { break; } finally { inflight = null; }
         if (r.status === 401 || r.status === 403 || r.status === 404) { authBad = true; toast({ title: "Schlüssel funktioniert nicht", desc: "Tippe oben auf den Status, um ihn zu prüfen.", type: "err" }); break; }
         if (!r.ok) break;
         const cur = outbox.get(op.opId);
         if (!cur) continue;
         const done = { ...cur, state: "sent", sentAt: nowIso() };
         await DB.run(["outbox"], (s) => s("outbox").put(done));
+        /* Inzwischen gelöscht (z. B. Notiz entfernt, während sie unterwegs war): nicht wieder anlegen */
+        if (!outbox.has(done.opId)) { await DB.run(["outbox"], (s) => s("outbox").delete(done.opId)).catch(() => {}); continue; }
         outbox.set(done.opId, done);
-        render();
+        scheduleRender();
       }
     } finally { flushing = false; updatePill(); }
   }
@@ -285,14 +290,21 @@
   }
 
   /* ---------- Liste zeichnen (Zeilen bleiben bestehen, damit Animationen sauber laufen) ---------- */
-  function opState(id) {
-    let st = null;
-    for (const o of outbox.values()) if (o.noteId === id) { if (o.state === "wait") return "wait"; st = "sent"; }
-    return st;
+  /* Einmal pro Zeichnen: je Notiz, ob etwas wartet und ob der letzte Schritt ein Löschen ist */
+  let opIdx = new Map();
+  function buildOpIdx() {
+    const m = new Map();
+    for (const o of outbox.values()) {
+      const e = m.get(o.noteId) || { wait: false, ts: "", del: false };
+      if (o.state === "wait") e.wait = true;
+      if (o.ts >= e.ts) { e.ts = o.ts; e.del = o.kind === "delete"; }
+      m.set(o.noteId, e);
+    }
+    opIdx = m;
   }
   function rowInner(n) {
     const p = parse(n.text);
-    const waiting = opState(n.id) === "wait";
+    const e = opIdx.get(n.id), waiting = !!(e && e.wait);
     let h = '<div class="t1"><b>' + esc(p.title) + "</b><time>" + (waiting ? '<i class="wdot" aria-label="Wartet auf Netz"></i>' : "") + esc(shortDate(n.updated || n.created)) + "</time></div>";
     if (p.sub) h += '<div class="sub">' + esc(p.sub) + "</div>";
     if (p.todos.length) {
@@ -327,11 +339,17 @@
   function flipRemove(el) {
     if (!el.isConnected) return;
     const items = [...document.querySelectorAll(".app .row, .app .sh, .app .empty")].filter((x) => x !== el && !el.contains(x));
-    const before = new Map(items.map((x) => [x, x.getBoundingClientRect().top]));
+    const top = el.getBoundingClientRect().top, vh = window.innerHeight;
+    /* Nur Zeilen darunter rücken nach; laufende Nachrück-Animationen übernehmen statt springen */
+    const below = items.filter((x) => x.getBoundingClientRect().top >= top - 1);
+    const before = new Map(below.map((x) => [x, x.getBoundingClientRect().top]));
     el.remove();
-    for (const x of items) {
-      const d = before.get(x) - x.getBoundingClientRect().top;
-      if (Math.abs(d) > 0.5) x.animate([{ transform: "translateY(" + d + "px)" }, { transform: "none" }], { duration: 240, easing: EO });
+    for (const x of below) {
+      if (x._flip) { x._flip.cancel(); x._flip = null; }
+      const now = x.getBoundingClientRect().top, d = before.get(x) - now;
+      if (Math.abs(d) < 0.5 || now > vh + 40) continue;
+      const a = x.animate([{ transform: "translateY(" + d + "px)" }, { transform: "none" }], { duration: 240, easing: EO });
+      x._flip = a; a.finished.then(() => { if (x._flip === a) x._flip = null; }, () => {});
     }
   }
   function leave(el) {
@@ -366,9 +384,13 @@
     }
     for (const el of existing.values()) leave(el);
   }
+  let rq = 0;
+  function scheduleRender() { if (!rq) rq = requestAnimationFrame(() => { rq = 0; render(); }); }
   function render() {
+    if (rq) { cancelAnimationFrame(rq); rq = 0; }
+    buildOpIdx();
     const q = query.trim().toLowerCase();
-    const all = [...notes.values()].filter((n) => String(n.text || "").trim()).sort((a, b) => String(b.updated || b.created).localeCompare(String(a.updated || a.created)));
+    const all = [...notes.values()].filter((n) => String(n.text || "").trim() && !pendingDel.has(n.id) && !(opIdx.get(n.id) || {}).del).sort((a, b) => String(b.updated || b.created).localeCompare(String(a.updated || a.created)));
     const hits = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
     const pinned = hits.filter((n) => n.angeheftet), rest = hits.filter((n) => !n.angeheftet);
     $("pinSec").hidden = !pinned.length;
@@ -454,13 +476,19 @@
     const el = btn.closest(".row");
     await enqueue("upsert", { ...n, text, updated: nowIso() }, n._m || null);
     if (el) el._h = rowInner(notes.get(id));   // Zeile nicht neu zeichnen, die Animation läuft schon
-    setTimeout(render, 400);
+    setTimeout(scheduleRender, 400);
   }
   async function removeNote(id) {
-    const n = notes.get(id); if (!n) return;
+    const n = notes.get(id); if (!n || pendingDel.has(id)) return;
     const snapNote = { ...n };
-    await enqueue("delete", n, n._m || null);
+    /* Sofort aus der Liste nehmen; Speichern läuft danach. Klappt es nicht, kommt die Zeile zurück. */
+    pendingDel.add(id);
+    const el = document.querySelector('.row[data-id="' + CSS.escape(id) + '"]:not([data-leaving])');
+    if (el) leave(el);
     render();
+    try { await enqueue("delete", n, n._m || null); }
+    catch (e) { pendingDel.delete(id); render(); toast({ title: "Nicht gelöscht", desc: "Bitte noch einmal versuchen.", type: "err" }); return; }
+    pendingDel.delete(id);
     toast({ title: "Gelöscht", desc: parse(snapNote.text).title, action: { label: "Rückgängig", fn: async () => { fresh.add(id); await enqueue("upsert", { ...snapNote, updated: nowIso() }, snapNote._m || null); render(); } } });
   }
 
@@ -643,11 +671,12 @@
     box.appendChild(el);
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on")));
     let left = duration || (action ? 5000 : 3200), started = Date.now(), timer;
-    const hide = () => { clearTimeout(timer); el.classList.remove("on"); setTimeout(() => el.remove(), 420); };
+    const vis = () => { if (document.hidden) { clearTimeout(timer); left -= Date.now() - started; } else arm(); };
+    const hide = () => { clearTimeout(timer); document.removeEventListener("visibilitychange", vis); el.classList.remove("on"); setTimeout(() => el.remove(), 420); };
     const arm = () => { started = Date.now(); timer = setTimeout(hide, left); };
     el.addEventListener("pointerenter", () => { clearTimeout(timer); left -= Date.now() - started; });
     el.addEventListener("pointerleave", arm);
-    document.addEventListener("visibilitychange", () => { if (document.hidden) { clearTimeout(timer); left -= Date.now() - started; } else arm(); }, { once: true });
+    document.addEventListener("visibilitychange", vis);
     if (action) el.querySelector("button").addEventListener("click", () => { hide(); action.fn(); });
     arm();
   }
