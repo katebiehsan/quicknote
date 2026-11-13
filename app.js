@@ -164,12 +164,16 @@
     /* Neu angelegt, noch nie übertragen und gleich wieder gelöscht: einfach weglassen */
     const drop = kind === "delete" && prev && prev.kind === "upsert" && prev.base == null && !sentFor(note.id) && !note._m;
     if (drop) op = null;
+    /* Löschen ersetzt alle älteren Schritte dieser Notiz, sonst holt ein übertragenes „Anlegen“ sie zurück */
+    const older = kind === "delete" ? [...outbox.values()].filter((o) => o.noteId === note.id && o !== prev) : [];
     await DB.run(["notes", "outbox"], (s) => {
       if (prev) s("outbox").delete(prev.opId);
+      older.forEach((o) => s("outbox").delete(o.opId));
       if (op) s("outbox").put(op);
       if (kind === "delete") s("notes").delete(note.id); else s("notes").put(note);
     });
     if (prev) outbox.delete(prev.opId);
+    older.forEach((o) => outbox.delete(o.opId));
     if (op) outbox.set(op.opId, op);
     if (kind === "delete") notes.delete(note.id); else notes.set(note.id, note);
     flush();
@@ -231,7 +235,9 @@
     for (const o of outbox.values()) {
       if (o.state !== "sent") continue;
       const x = mir.get(o.noteId);
-      const ok = o.kind === "delete" ? !x : x && (String(x.updated) > String(o.note.updated) || (x.text === o.note.text && !!x.angeheftet === !!o.note.angeheftet));
+      /* Löschen gilt erst als erledigt, wenn der Spiegel nach dem Senden neu erstellt wurde */
+      const fresher = m.generated && new Date(m.generated).getTime() > new Date(o.sentAt || o.ts).getTime();
+      const ok = o.kind === "delete" ? !x && fresher : x && (String(x.updated) > String(o.note.updated) || (x.text === o.note.text && !!x.angeheftet === !!o.note.angeheftet));
       if (ok || new Date(o.sentAt || o.ts).getTime() < old) settled.push(o.opId);
     }
     settled.forEach((id) => outbox.delete(id));
@@ -308,18 +314,34 @@
     const h = el.offsetHeight;
     el.animate([{ height: "0px", opacity: 0, transform: "translateY(-4px)" }, { height: h + "px", opacity: 1, transform: "none" }], { duration: 260, easing: EO });
   }
+  /* Löschen: Zeile gleitet zur Seite, danach rücken die anderen per Transform nach (kein Höhen-Animieren, damit nichts ruckelt) */
+  function slideOut(el) {
+    if (el._slide) return el._slide;
+    const f = el.querySelector(".front"), bg = el.querySelector(".bgR");
+    const from = getComputedStyle(f).transform;
+    f.classList.remove("snap");
+    if (bg) bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: EO, fill: "forwards" });
+    el._slide = f.animate([{ transform: from === "none" ? "translateX(0)" : from }, { transform: "translateX(-110%)" }], { duration: 200, easing: EO, fill: "forwards" });
+    return el._slide;
+  }
+  function flipRemove(el) {
+    if (!el.isConnected) return;
+    const items = [...document.querySelectorAll(".app .row, .app .sh, .app .empty")].filter((x) => x !== el && !el.contains(x));
+    const before = new Map(items.map((x) => [x, x.getBoundingClientRect().top]));
+    el.remove();
+    for (const x of items) {
+      const d = before.get(x) - x.getBoundingClientRect().top;
+      if (Math.abs(d) > 0.5) x.animate([{ transform: "translateY(" + d + "px)" }, { transform: "none" }], { duration: 240, easing: EO });
+    }
+  }
   function leave(el) {
     el.dataset.leaving = "1";
     if (openRow === el) openRow = null;
-    const f = el.querySelector(".front");
-    const gone = () => { if (el.isConnected) el.remove(); };
-    if (reduce || !el.offsetParent) { gone(); return; }
-    const h = el.offsetHeight;
-    /* Emil: erst zur Seite gleiten, dann die Lücke weich schließen */
-    const slide = el._swiped ? f.animate([{ transform: getComputedStyle(f).transform }, { transform: "translateX(-110%)", opacity: 0 }], { duration: 180, easing: EO, fill: "forwards" }) : null;
-    const close = () => { const a = el.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: 220, easing: EO, fill: "forwards" }); a.onfinish = gone; };
-    if (slide) slide.onfinish = close; else close();
-    setTimeout(gone, 700);
+    if (reduce || !el.offsetParent) { el.remove(); return; }
+    const done = () => flipRemove(el);
+    const a = el._slide || (el._swiped ? slideOut(el) : el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: EO, fill: "forwards" }));
+    a.finished.then(done, done);
+    setTimeout(() => { if (el.isConnected) el.remove(); }, 900);
   }
   function paint(container, items) {
     const existing = new Map();
@@ -411,7 +433,7 @@
       openNote(r.dataset.id);
     });
     f.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target === f) openNote(r.dataset.id); });
-    r.querySelector(".del").addEventListener("click", () => { openRow = null; r._swiped = true; removeNote(r.dataset.id); });
+    r.querySelector(".del").addEventListener("click", () => { openRow = null; r._swiped = true; if (!reduce) slideOut(r); removeNote(r.dataset.id); });
   }
 
   /* ---------- Aktionen ---------- */
