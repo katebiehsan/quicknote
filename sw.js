@@ -1,6 +1,6 @@
 /* Quicknote Service Worker: App offline verfügbar halten. GitHub-API wird nie zwischengespeichert. */
-const VERSION = "qn-v24";
-const SHELL = ["./", "index.html", "app.css", "app.js", "manifest.webmanifest", "icons/qn2-180.png", "icons/qn2-192.png", "icons/qn2-512.png"];
+const VERSION = "qn-v25";
+const SHELL = ["./", "index.html", "app.css", "app.js", "manifest.webmanifest", "icons/qn2-180.png", "icons/qn2-192.png", "icons/qn2-512.png", "fonts/inter.woff2"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -14,8 +14,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.hostname === "api.github.com") return;
   const own = url.origin === self.location.origin;
-  const font = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
-  if (!own && !font) return;
+  if (!own) return;
   /* Aus dem Speicher sofort liefern, im Hintergrund auffrischen */
   e.respondWith(caches.open(VERSION).then(async (c) => {
     const hit = await c.match(req, { ignoreSearch: own });

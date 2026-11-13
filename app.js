@@ -275,9 +275,8 @@
     else if (sent) text = "Nächster Sync " + nextImport().replace(/^um /, "").replace(/^morgen um /, "morgen ");
     else { text = "Alles in Second Brain"; cls = "ok"; }
     const p = $("pill"), t = $("pillT");
-    /* Nur ein Symbol: grüner Haken = alles da, Uhr = kommt beim nächsten Sync, gelbe Zahl = wartet, rotes ! = Schlüssel */
+    /* Ein Symbol: grün = alles da bzw. übertragen, pulsiert = überträgt, durchgestrichen = offline, rot = Schlüssel; Text nur für VoiceOver */
     const label = text;
-    /* Ein Symbol für die Verbindung: grüne Wolke mit Haken = verbunden, weiß = überträgt, rot = Schlüssel, grau durchgestrichen = offline */
     text = "";
     if (cls === "ok" || (!cls && sent)) cls = "ok";
     if (cls === "wait") cls = navigator.onLine ? "busy" : "off";
@@ -652,19 +651,12 @@
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && sheetMode === "note") { e.preventDefault(); finishNote(); }
   });
   /* Status-Symbol öffnet die Einstellungen (Schlüssel, Stand) */
-  $("pill").addEventListener("click", () => {
-    openSettings(); flush(); pullMirror(); return;
-    const wait = [...outbox.values()].filter((o) => o.state === "wait").length;
-    if (wait) toast({ title: wait === 1 ? "1 Notiz wartet" : wait + " Notizen warten", desc: navigator.onLine ? "Wird gerade übertragen." : "Wird übertragen, sobald du online bist." });
-    else if ([...outbox.values()].some((o) => o.state === "sent")) toast({ title: "Übertragen", desc: "Kommt " + nextImport() + " in Second Brain." });
-    else toast({ title: "Alles in Second Brain", desc: mirrorAt ? "Zuletzt abgeglichen: " + longDate(mirrorAt) : "Verbunden." });
-    flush(); pullMirror();
-  });
+  $("pill").addEventListener("click", () => { openSettings(); flush(); pullMirror(); });
 
   /* ---------- Toast nach Sonner ---------- */
   function toast({ title, desc, type, action, duration }) {
     const box = $("toaster");
-    for (const old of [...box.children]) { old.classList.remove("on"); setTimeout(() => old.remove(), 300); }
+    for (const old of [...box.children]) { old.classList.remove("on"); setTimeout(() => old.remove(), 260); }
     const el = document.createElement("div");
     el.className = "toast" + (type === "err" ? " err" : "");
     el.setAttribute("role", type === "err" ? "alert" : "status");
@@ -673,7 +665,7 @@
     requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on")));
     let left = duration || (action ? 5000 : 3200), started = Date.now(), timer;
     const vis = () => { if (document.hidden) { clearTimeout(timer); left -= Date.now() - started; } else arm(); };
-    const hide = () => { clearTimeout(timer); document.removeEventListener("visibilitychange", vis); el.classList.remove("on"); setTimeout(() => el.remove(), 420); };
+    const hide = () => { clearTimeout(timer); document.removeEventListener("visibilitychange", vis); el.classList.remove("on"); setTimeout(() => el.remove(), 260); };
     const arm = () => { started = Date.now(); timer = setTimeout(hide, left); };
     el.addEventListener("pointerenter", () => { clearTimeout(timer); left -= Date.now() - started; });
     el.addEventListener("pointerleave", arm);

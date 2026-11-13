@@ -1,4 +1,6 @@
 /* Quicknote – dunkel, Inter, Abstände 2·4·6·8·10·12·14·16·20·24·32·40·48·64 */
+/* Inter liegt in der App (fonts/, SIL OFL 1.1): kein Laden von Google, sofort da, auch offline */
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter.woff2) format("woff2-variations"), url(fonts/inter.woff2) format("woff2"); }
 :root {
   color-scheme: dark;
   --page: #000000; --surface: #191919; --raised: #222222;
@@ -35,10 +37,6 @@ input, textarea { font-family: inherit; font-size: 16px; }
 .pill.bad { color: var(--err); background: var(--err-bg); border-color: var(--err-line); }
 
 /* Eingabe */
-.chip { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 10px; transform-origin: left center; transition: opacity 160ms ease, transform 200ms var(--ease-out), filter 160ms ease; }
-.chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chip:active { transform: scale(0.97); }
-.chip.off { opacity: 0; transform: scale(0.95); filter: blur(2px); pointer-events: none; }
 .dot { width: 8px; height: 8px; border-radius: 4px; flex: none; background: var(--privat); transition: background-color 200ms ease; }
 .dot.claude { background: var(--claude); }
 .err { min-height: 20px; font-size: 13px; color: var(--err); padding-top: 2px; }
@@ -76,7 +74,6 @@ button.sh:active { transform: scale(0.98); }
 .t1 time { font-size: 12px; color: var(--hint); flex: none; font-variant-numeric: tabular-nums; }
 .sub { margin-top: 2px; font-size: 14px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .st { margin-top: 4px; font-size: 12px; color: var(--hint); display: flex; align-items: center; gap: 6px; }
-.st.w { color: var(--warn); }
 .st .dot { width: 6px; height: 6px; }
 .more { margin-top: 2px; font-size: 13px; color: var(--hint); }
 
@@ -121,7 +118,7 @@ button.sh:active { transform: scale(0.98); }
 
 /* Toast nach Sonner */
 .toaster { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 84px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; padding: 0 16px; }
-.toast { pointer-events: auto; width: 100%; max-width: 380px; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; transform: translateY(calc(100% + 16px)); opacity: 0; transition: transform 400ms ease, opacity 400ms ease; touch-action: pan-x; }
+.toast { pointer-events: auto; width: 100%; max-width: 380px; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; transform: translateY(calc(100% + 16px)); opacity: 0; transition: transform 250ms var(--ease-out), opacity 250ms var(--ease-out); touch-action: pan-x; }
 .toast.on { transform: none; opacity: 1; }
 .toast.err { background: var(--err-bg); border-color: var(--err-line); color: var(--err); }
 .toast .tt { flex: 1; min-width: 0; }
