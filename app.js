@@ -263,7 +263,7 @@
     else if (authBad) { text = "Schlüssel prüfen"; cls = "bad"; }
     else if (wait) { text = wait + " wartet"; cls = "wait"; }
     else if (sent) text = "Nächster Sync " + nextImport().replace(/^um /, "").replace(/^morgen um /, "morgen ");
-    else text = "Alles in Second Brain";
+    else { text = "Alles in Second Brain"; cls = "ok"; }
     const p = $("pill"), t = $("pillT");
     if (t.textContent === text && p.dataset.cls === cls) return;
     const apply = () => { t.textContent = text; p.className = "pill" + (cls ? " " + cls : ""); p.dataset.cls = cls; };

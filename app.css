@@ -228,3 +228,10 @@ button.sh:active { transform: scale(0.98); }
 .toast { border-radius: 18px; padding: 10px 10px 10px 16px; max-width: 360px; }
 .toast button { border-radius: 12px; padding: 8px 12px; }
 .pill { padding: 6px 12px; }
+/* Status oben: abgehakt, wenn alles in Second Brain ist */
+.pill .pok { display: none; width: 14px; height: 14px; flex: none; }
+.pill .pok circle { fill: var(--ink); }
+.pill .pok path { fill: none; stroke: #000; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0; animation: go-draw 380ms var(--ease-out) 80ms backwards; }
+.pill.ok { color: var(--ink); }
+.pill.ok i { display: none; }
+.pill.ok .pok { display: block; animation: cb-pop 260ms var(--ease-out); }
