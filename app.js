@@ -267,8 +267,10 @@
     const p = $("pill"), t = $("pillT");
     /* Nur ein Symbol: grüner Haken = alles da, Uhr = kommt beim nächsten Sync, gelbe Zahl = wartet, rotes ! = Schlüssel */
     const label = text;
-    if (cls === "wait") text = String(wait); else if (cls === "bad") text = "!"; else text = "";
-    if (!cls && sent) cls = "sync";
+    /* Ein Symbol für die Verbindung: grüne Wolke mit Haken = verbunden, weiß = überträgt, rot = Schlüssel, grau durchgestrichen = offline */
+    text = "";
+    if (cls === "ok" || (!cls && sent)) cls = "ok";
+    if (cls === "wait") cls = navigator.onLine ? "busy" : "off";
     p.setAttribute("aria-label", label); p.title = label;
     if (t.textContent === text && p.dataset.cls === cls) return;
     const apply = () => { t.textContent = text; p.className = "pill" + (cls ? " " + cls : ""); p.dataset.cls = cls; };

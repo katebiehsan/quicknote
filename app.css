@@ -258,3 +258,16 @@ button.sh:active { transform: scale(0.98); }
 .pill.ok .pok path { stroke: var(--ok-bg); }
 .pill.wait span, .pill.bad span { display: block; }
 .pill span:empty { display: none; }
+/* Verbindung als Wolke */
+.pill .pok, .pill span { display: none !important; }
+.pill .pcloud { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pill .pcloud .ck, .pill .pcloud .cx { opacity: 0; }
+.pill.ok { color: var(--ok); background: var(--ok-bg); border-color: var(--ok-line); }
+.pill.ok .ck { opacity: 1; stroke-dasharray: 1; animation: go-draw 380ms var(--ease-out) 80ms backwards; }
+.pill.busy { color: var(--ink); background: var(--surface); }
+.pill.busy .cl { animation: qn-pulse 1.2s ease-in-out infinite; }
+@keyframes qn-pulse { 50% { opacity: 0.45; } }
+.pill.off { color: var(--hint); background: var(--surface); }
+.pill.off .cx, .pill.bad .cx { opacity: 1; }
+.pill.bad { color: var(--err); background: var(--err-bg); border-color: var(--err-line); }
+@media (prefers-reduced-motion: reduce) { .pill.busy .cl { animation: none; } }
