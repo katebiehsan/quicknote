@@ -1,6 +1,6 @@
 /* Quicknote Service Worker: App offline verfügbar halten. GitHub-API wird nie zwischengespeichert. */
-const VERSION = "qn-v9";
-const SHELL = ["./", "index.html", "app.css", "app.js", "manifest.webmanifest", "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png"];
+const VERSION = "qn-v10";
+const SHELL = ["./", "index.html", "app.css", "app.js", "manifest.webmanifest", "icons/qn-180.png", "icons/qn-192.png", "icons/qn-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
