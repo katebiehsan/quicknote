@@ -339,14 +339,15 @@
   function flipRemove(el) {
     if (!el.isConnected) return;
     const items = [...document.querySelectorAll(".app .row, .app .sh, .app .empty")].filter((x) => x !== el && !el.contains(x));
+    /* Erst alles lesen, dann alles ändern, dann wieder lesen: sonst rechnet der Browser pro Zeile neu */
     const top = el.getBoundingClientRect().top, vh = window.innerHeight;
-    /* Nur Zeilen darunter rücken nach; laufende Nachrück-Animationen übernehmen statt springen */
-    const below = items.filter((x) => x.getBoundingClientRect().top >= top - 1);
-    const before = new Map(below.map((x) => [x, x.getBoundingClientRect().top]));
+    const below = [], before = [];
+    for (const x of items) { const t = x.getBoundingClientRect().top; if (t >= top - 1 && t < vh + 200) { below.push(x); before.push(t); } }
     el.remove();
-    for (const x of below) {
-      if (x._flip) { x._flip.cancel(); x._flip = null; }
-      const now = x.getBoundingClientRect().top, d = before.get(x) - now;
+    for (const x of below) if (x._flip) { x._flip.cancel(); x._flip = null; }
+    const after = below.map((x) => x.getBoundingClientRect().top);
+    for (let i = 0; i < below.length; i++) {
+      const x = below[i], now = after[i], d = before[i] - now;
       if (Math.abs(d) < 0.5 || now > vh + 40) continue;
       const a = x.animate([{ transform: "translateY(" + d + "px)" }, { transform: "none" }], { duration: 240, easing: EO });
       x._flip = a; a.finished.then(() => { if (x._flip === a) x._flip = null; }, () => {});

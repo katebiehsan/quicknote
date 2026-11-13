@@ -61,14 +61,15 @@ button.sh:active { transform: scale(0.98); }
 .empty { margin: 0; padding: 24px 0; color: var(--hint); font-size: 14px; line-height: 1.6; }
 
 /* Zeilen */
-.row { position: relative; overflow: hidden; }
+.row { position: relative; overflow: hidden; contain: layout paint style; content-visibility: auto; contain-intrinsic-size: auto 76px; }
+/* Unsichtbare Zeilen werden nicht berechnet: bleibt auch bei Hunderten Notizen flüssig */
 .row + .row::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line-soft); z-index: 2; }
 .bgL, .bgR { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; font-size: 13px; font-weight: 500; opacity: 0; }
 .bgL { left: 0; right: 0; padding-left: 16px; background: var(--surface); color: var(--ink); }
 .bgR { right: 0; }
 .bgR button { height: 100%; width: 96px; background: var(--err-bg); color: var(--err); text-align: center; }
 .row.sw-r .bgL, .row.sw-l .bgR { opacity: 1; }
-.front { position: relative; z-index: 1; background: var(--page); padding: 12px 0; touch-action: pan-y; }
+.front { position: relative; z-index: 1; background: var(--page); padding: 12px 0; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .front.snap { transition: transform 240ms var(--ease-drawer); }
 .t1 { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .t1 b { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
