@@ -58,11 +58,13 @@ input, textarea { font-family: inherit; font-size: 16px; }
 .btn.sq { width: 48px; flex: none; display: flex; align-items: center; justify-content: center; }
 .btn.pri .lb, .btn.pri .ok { position: absolute; inset: 0; display: grid; place-items: center; transition: filter 200ms ease, opacity 200ms ease, transform 200ms var(--ease-out); }
 .btn.pri .ok { opacity: 0; filter: blur(2px); transform: scale(0.93); }
-.btn.pri .ok svg { width: 22px; height: 22px; fill: none; stroke: #111111; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.btn.pri .ok path { stroke-dasharray: 24; stroke-dashoffset: 24; }
+/* Haken wie Emils Feedback-Button: Kreis in Schriftfarbe, Haken in Button-Farbe, dick und rund */
+.btn.pri .ok svg { width: 24px; height: 24px; }
+.btn.pri .ok circle { fill: #111111; }
+.btn.pri .ok path { fill: none; stroke: var(--ink); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
 .btn.pri.done .lb { opacity: 0; filter: blur(2px); transform: scale(0.97); }
 .btn.pri.done .ok { opacity: 1; filter: none; transform: none; }
-.btn.pri.done .ok path { stroke-dashoffset: 0; transition: stroke-dashoffset 320ms var(--ease-out) 60ms; }
+.btn.pri.done .ok path { stroke-dashoffset: 0; transition: stroke-dashoffset 320ms var(--ease-out) 80ms; }
 
 /* Suche */
 .search { padding: 16px 0 0; }
@@ -106,11 +108,12 @@ button.sh:active { transform: scale(0.98); }
 /* Aufgaben-Kästchen */
 .todos { margin-top: 4px; }
 .todo { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; font-size: 15px; }
-.cb { position: relative; flex: none; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--line); display: grid; place-items: center; transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease-out; }
-.cb svg { width: 12px; height: 12px; fill: none; stroke: #111111; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cb { position: relative; flex: none; width: 22px; height: 22px; border-radius: 11px; border: 1.5px solid var(--line); display: grid; place-items: center; transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease-out; }
+.cb svg { width: 14px; height: 14px; fill: none; stroke: #000000; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .cb svg path { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset 120ms ease-out; }
 .todo:active .cb { transform: scale(0.92); }
-.todo.on .cb { background: var(--ink); border-color: var(--ink); }
+.todo.on .cb { background: var(--ink); border-color: var(--ink); animation: cb-pop 260ms var(--ease-out); }
+@keyframes cb-pop { from { transform: scale(0.9); } to { transform: scale(1); } }
 .todo.on .cb svg path { stroke-dashoffset: 0; transition: stroke-dashoffset 260ms var(--ease-out) 60ms; }
 .tx { position: relative; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); transition: color 200ms ease; }
 .tx::after { content: ""; position: absolute; left: 0; right: 0; top: 52%; height: 1.5px; background: var(--hint); transform: scaleX(0); transform-origin: left center; transition: transform 200ms var(--ease-out); }
