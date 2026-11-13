@@ -265,6 +265,11 @@
     else if (sent) text = "Nächster Sync " + nextImport().replace(/^um /, "").replace(/^morgen um /, "morgen ");
     else { text = "Alles in Second Brain"; cls = "ok"; }
     const p = $("pill"), t = $("pillT");
+    /* Nur ein Symbol: grüner Haken = alles da, Uhr = kommt beim nächsten Sync, gelbe Zahl = wartet, rotes ! = Schlüssel */
+    const label = text;
+    if (cls === "wait") text = String(wait); else if (cls === "bad") text = "!"; else text = "";
+    if (!cls && sent) cls = "sync";
+    p.setAttribute("aria-label", label); p.title = label;
     if (t.textContent === text && p.dataset.cls === cls) return;
     const apply = () => { t.textContent = text; p.className = "pill" + (cls ? " " + cls : ""); p.dataset.cls = cls; };
     if (!t.textContent || reduce) { apply(); return; }
@@ -599,7 +604,8 @@
     if (!token || authBad) { openSettings(); return; }
     const wait = [...outbox.values()].filter((o) => o.state === "wait").length;
     if (wait) toast({ title: wait === 1 ? "1 Notiz wartet" : wait + " Notizen warten", desc: navigator.onLine ? "Wird gerade übertragen." : "Wird übertragen, sobald du online bist." });
-    else toast({ title: "Alles übertragen", desc: mirrorAt ? "Zuletzt aus Second Brain: " + longDate(mirrorAt) : "Second Brain übernimmt " + nextImport() + "." });
+    else if ([...outbox.values()].some((o) => o.state === "sent")) toast({ title: "Übertragen", desc: "Kommt " + nextImport() + " in Second Brain." });
+    else toast({ title: "Alles in Second Brain", desc: mirrorAt ? "Zuletzt abgeglichen: " + longDate(mirrorAt) : "Verbunden." });
     flush(); pullMirror();
   });
 

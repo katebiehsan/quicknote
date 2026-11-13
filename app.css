@@ -247,3 +247,14 @@ button.sh:active { transform: scale(0.98); }
 .pill { background: var(--surface); border-color: var(--line); color: var(--ink); }
 .pill.wait { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn); }
 .pill.bad { background: var(--err-bg); border-color: var(--err-line); color: var(--err); }
+/* Status oben nur als runder Knopf mit Symbol (Funktionsfarben nach Sonner) */
+.pill { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: 20px; gap: 0; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pill i, .pill .psync, .pill .pok { display: none; }
+.pill .psync { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pill.sync .psync { display: block; }
+.pill.ok { background: var(--ok-bg); border-color: var(--ok-line); }
+.pill.ok .pok { display: block; width: 20px; height: 20px; }
+.pill.ok .pok circle { fill: var(--ok); }
+.pill.ok .pok path { stroke: var(--ok-bg); }
+.pill.wait span, .pill.bad span { display: block; }
+.pill span:empty { display: none; }
