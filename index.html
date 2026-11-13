@@ -37,8 +37,9 @@
 </main>
 
 <nav class="dock" aria-label="Aktionen">
-  <label class="spill"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="q" type="search" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Notizen durchsuchen"></label>
-  <button class="circ add" id="newBtn" type="button" aria-label="Neue Notiz"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="npill" id="newBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Neue Notiz</button>
+  <label class="spill" id="qWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="q" type="search" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Notizen durchsuchen"></label>
+  <button class="circ" id="qBtn" type="button" aria-label="Suchen" aria-expanded="false" aria-controls="qWrap"><svg class="i-s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><svg class="i-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 </nav>
 
 <section class="cmp" id="cmp" hidden aria-label="Neue Notiz" role="dialog" aria-modal="true">

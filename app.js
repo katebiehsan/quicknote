@@ -566,7 +566,22 @@
   }
 
   /* ---------- Suche und Einklappen ---------- */
-  $("q").addEventListener("input", (e) => { query = e.target.value; render(); });
+  const dock = document.querySelector(".dock"), qEl = $("q"), qBtn = $("qBtn");
+  function setSearch(on) {
+    dock.classList.toggle("search", on);
+    qBtn.setAttribute("aria-expanded", String(on));
+    qBtn.setAttribute("aria-label", on ? "Suche schließen" : "Suchen");
+    if (on) qEl.focus({ preventScroll: true });     // noch im Tipp, damit iOS die Tastatur öffnet
+    else { qEl.blur(); if (query) { qEl.value = ""; query = ""; render(); } }
+  }
+  qBtn.addEventListener("pointerdown", (e) => { if (dock.classList.contains("search")) e.preventDefault(); }); // Fokus halten, sonst schließt blur vorher
+  qBtn.addEventListener("click", () => setSearch(!dock.classList.contains("search")));
+  qEl.addEventListener("input", (e) => { query = e.target.value; render(); });
+  qEl.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); setSearch(false); }
+    if (e.key === "Enter") qEl.blur();
+  });
+  qEl.addEventListener("blur", () => { if (!qEl.value.trim()) setTimeout(() => { if (document.activeElement !== qEl && !qEl.value.trim()) setSearch(false); }, 0); });
   const pinSec = $("pinSec");
   if (ls.get("qn-pin-closed") === "1") { pinSec.classList.add("closed"); $("pinTog").setAttribute("aria-expanded", "false"); }
   $("pinTog").addEventListener("click", () => {
