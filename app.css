@@ -242,3 +242,8 @@ button.sh:active { transform: scale(0.98); }
 .bgL .pin { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: scale(0.9) rotate(0deg); opacity: 0.6; transition: transform 220ms var(--ease-out), opacity 160ms ease; }
 .row.arm .bgL .pin { transform: scale(1.15) rotate(-20deg); opacity: 1; }
 .row.arm .bgL .pin path:first-child { fill: currentColor; }
+/* Kopf etwas tiefer, damit iOS' Abdunklung am oberen Rand die Anzeige nicht verschluckt */
+.top { padding-top: 20px; }
+.pill { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.pill.wait { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn); }
+.pill.bad { background: var(--err-bg); border-color: var(--err-line); color: var(--err); }
