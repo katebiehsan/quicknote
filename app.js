@@ -113,7 +113,6 @@
 
   /* ---------- Termin erkennen: „morgen 10 Uhr“, „Freitag 14:30“, „20.11.“ ---------- */
   const DAYS = { sonntag: 0, montag: 1, dienstag: 2, mittwoch: 3, donnerstag: 4, freitag: 5, samstag: 6 };
-  const CLAUDE_RX = /\b(VL|UE|PI ?\d?|MA|PO|WI|Vorlesung|Übung|Tutorium|Tutor|Klausur|Prüfung|Lernen|Lernblock|Uni|Universität)\b/i;
   function detect(text) {
     const first = String(text || "").split("\n").find((l) => l.trim()) || "";
     const s = first.toLowerCase();
@@ -142,7 +141,7 @@
     title = title.replace(/\s+(am|um|ab)\s*$/i, "").replace(/\s{2,}/g, " ").replace(/^[\s,–-]+|[\s,–-]+$/g, "") || first.trim();
     const key = date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate());
     return {
-      date: key, start, end: "", title, cal: CLAUDE_RX.test(first) ? "claude" : "privat",
+      date: key, start, end: "", title, cal: "claude",   // Standard Claude, Privat per Tipp auf den Vorschlag
       label: WD[date.getDay()] + ", " + date.getDate() + ". " + MON[date.getMonth()] + (start ? ", " + start : ""),
     };
   }
