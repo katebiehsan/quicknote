@@ -145,7 +145,7 @@ button.sh:active { transform: scale(0.98); }
 .set .row2 { display: flex; gap: 8px; margin-top: 12px; }
 
 /* Toast nach Sonner */
-.toaster { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; padding: 0 16px; }
+.toaster { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 84px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; padding: 0 16px; }
 .toast { pointer-events: auto; width: 100%; max-width: 380px; display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; transform: translateY(calc(100% + 16px)); opacity: 0; transition: transform 400ms ease, opacity 400ms ease; touch-action: pan-x; }
 .toast.on { transform: none; opacity: 1; }
 .toast.err { background: var(--err-bg); border-color: var(--err-line); color: var(--err); }
@@ -163,3 +163,50 @@ button.sh:active { transform: scale(0.98); }
   *, *::before, *::after { transition-property: opacity, color, background-color, border-color !important; }
   .front.snap, .sheet { transition-duration: 0ms !important; }
 }
+
+/* ---------- Layout nach Superlist-Vorbild (Nov. 2026) ---------- */
+.top { justify-content: flex-end; min-height: 48px; }
+.big { margin: 8px 0 0; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
+.big + .sec, .big + .sec[hidden] + .sec { margin-top: 24px; }
+.app { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+.circ { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; background: var(--page); border: 1px solid var(--line); color: var(--text-2); transition: transform 160ms ease-out, background-color 160ms ease; }
+.circ:active { transform: scale(0.97); background: var(--surface); }
+.circ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.circ.add { background: var(--ink); border-color: var(--ink); color: #111111; }
+.circ.add svg { stroke-width: 2.2; }
+.circ.add:active { background: #d8d8d8; }
+
+/* Leiste unten: im Daumenbereich, wandert mit der Tastatur */
+.dock { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: flex; align-items: center; gap: 8px; max-width: 640px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
+.dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, #000 60%, rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
+.spill { flex: 1; min-width: 0; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--page); color: var(--hint); }
+.spill:focus-within { border-color: #6f6f6f; }
+.spill svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.spill input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); padding: 0; -webkit-appearance: none; }
+.spill input::placeholder { color: var(--hint); }
+.spill input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* Schreiben im Vollbild: Karte oben, runder Haken über der Tastatur */
+.cmp { position: fixed; inset: 0; z-index: 45; background: var(--page); display: flex; flex-direction: column; gap: 16px; padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); opacity: 0; transform: translateY(16px); transition: opacity 200ms ease, transform 260ms var(--ease-out); }
+.cmp.on { opacity: 1; transform: none; }
+.cmp > * { width: 100%; max-width: 640px; margin-left: auto; margin-right: auto; }
+.cmp .circ:first-child { width: 48px; margin-left: max(0px, calc((100% - 640px) / 2)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.card textarea { display: block; width: 100%; min-height: 64px; max-height: 40dvh; resize: none; background: transparent; border: 0; outline: none; color: var(--ink); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.4; padding: 20px 20px 4px; overflow-wrap: anywhere; }
+.card textarea::placeholder { color: var(--hint); }
+.card .err { padding: 0 20px; min-height: 18px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 12px 16px 16px; border-top: 1px solid var(--line); }
+.chips::-webkit-scrollbar { display: none; }
+.dchip { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 18px; border: 1.5px dashed var(--line); color: var(--text-2); font-size: 14px; transition: transform 160ms ease-out, opacity 160ms ease, filter 160ms ease, border-color 160ms ease; transform-origin: left center; }
+.dchip:active { transform: scale(0.97); }
+.dchip .cb { width: 18px; height: 18px; }
+.dchip.off { opacity: 0; transform: scale(0.95); filter: blur(2px); pointer-events: none; width: 0; padding: 0; border-width: 0; margin-left: -8px; }
+#chip:not(.off) { border-style: solid; color: var(--ink); }
+.go { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--kb, 0px) + 16px + env(safe-area-inset-bottom, 0px)); width: 64px !important; height: 64px; border-radius: 32px; background: var(--ink); display: grid; place-items: center; transition: transform 160ms ease-out; }
+.go:active { transform: scale(0.95); }
+.go svg { width: 28px; height: 28px; fill: none; stroke: #111111; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.go path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.go.done path { animation: go-draw 380ms var(--ease-out); }
+.go.done { animation: go-pop 300ms var(--ease-out); }
+@keyframes go-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes go-pop { 0% { transform: scale(0.94); } 100% { transform: scale(1); } }

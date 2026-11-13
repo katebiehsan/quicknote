@@ -436,7 +436,7 @@
     lastDetect = d;
     if (!d) { chip.classList.add("off"); calOverride = null; return; }
     const cal = calOverride || d.cal;
-    $("chipT").textContent = "Termin-Vorschlag · " + d.label;
+    $("chipT").textContent = d.label;
     chip.querySelector(".dot").classList.toggle("claude", cal === "claude");
     chip.setAttribute("aria-label", "Termin-Vorschlag " + d.label + ", Kalender " + (cal === "claude" ? "Claude" : "Privat") + ". Antippen wechselt den Kalender.");
     chip.classList.remove("off");
@@ -466,7 +466,7 @@
     if (lastDetect) n.vorschlag = { date: lastDetect.date, start: lastDetect.start, end: "", title: lastDetect.title, cal: calOverride || lastDetect.cal, done: false };
     const btn = $("saveBtn");
     btn.classList.remove("done"); void btn.offsetWidth; btn.classList.add("done");
-    clearTimeout(okTimer); okTimer = setTimeout(() => btn.classList.remove("done"), 1500);
+    clearTimeout(okTimer); okTimer = setTimeout(() => btn.classList.remove("done"), 600);
     ta.value = ""; ls.set("qn-draft", null); grow(ta); calOverride = null; updateChip();
     fresh.add(n.id);
     try { await enqueue("upsert", n, null); }
@@ -474,14 +474,33 @@
     render();
   }
   $("saveBtn").addEventListener("click", saveNew);
-  ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNew(); } });
+  ta.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNew(); }
+    if (e.key === "Escape") { e.preventDefault(); closeCompose(); }
+  });
+
+  /* ---------- Schreiben im Vollbild ---------- */
+  const cmp = $("cmp");
+  function openCompose() {
+    cmp.hidden = false;
+    ta.focus({ preventScroll: true });          // noch im Tipp, damit iOS die Tastatur öffnet
+    grow(ta); updateChip();
+    requestAnimationFrame(() => cmp.classList.add("on"));
+  }
+  function closeCompose() {
+    ta.blur(); cmp.classList.remove("on");
+    setTimeout(() => { if (!cmp.classList.contains("on")) cmp.hidden = true; }, 260);
+  }
+  $("newBtn").addEventListener("click", openCompose);
+  $("cmpClose").addEventListener("click", closeCompose);
+  /* Tastaturhöhe messen, damit Leiste und Haken direkt darüber sitzen */
+  if (window.visualViewport) {
+    const vv = window.visualViewport;
+    const kb = () => document.documentElement.style.setProperty("--kb", Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + "px");
+    vv.addEventListener("resize", kb); vv.addEventListener("scroll", kb); kb();
+  }
 
   /* ---------- Suche und Einklappen ---------- */
-  $("findBtn").addEventListener("click", () => {
-    const w = $("searchWrap"), on = w.hidden;
-    w.hidden = !on; $("findBtn").setAttribute("aria-expanded", String(on));
-    if (on) $("q").focus(); else { query = ""; $("q").value = ""; render(); }
-  });
   $("q").addEventListener("input", (e) => { query = e.target.value; render(); });
   const pinSec = $("pinSec");
   if (ls.get("qn-pin-closed") === "1") { pinSec.classList.add("closed"); $("pinTog").setAttribute("aria-expanded", "false"); }

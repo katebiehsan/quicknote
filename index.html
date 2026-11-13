@@ -21,25 +21,10 @@
 <body>
 <main class="app">
   <header class="top">
-    <h1>Quicknote</h1>
-    <div class="top-r">
-      <button class="pill" id="pill" type="button" aria-label="Übertragungsstand"><i></i><span id="pillT">Lädt</span></button>
-      <button class="ic" id="findBtn" type="button" aria-label="Suchen" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button>
-      <button class="ic" id="setBtn" type="button" aria-label="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
-    </div>
+    <button class="pill" id="pill" type="button" aria-label="Übertragungsstand"><i></i><span id="pillT">Lädt</span></button>
   </header>
+  <h1 class="big">Quicknote</h1>
 
-  <section class="compose" aria-label="Neue Notiz">
-    <textarea id="ta" rows="3" placeholder="Gedanke festhalten" autocapitalize="sentences" enterkeyhint="enter" aria-label="Neue Notiz"></textarea>
-    <div class="chiprow"><button class="chip off" id="chip" type="button" aria-label="Termin-Vorschlag, antippen wechselt den Kalender"><i class="dot"></i><span id="chipT"></span></button></div>
-    <div class="err" id="err" role="status"></div>
-    <div class="actions">
-      <button class="btn alt sq" id="todoBtn" type="button" aria-label="Aufgabe einfügen"><span class="cb"></span></button>
-      <button class="btn pri" id="saveBtn" type="button"><span class="lb">Sichern</span><span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12"/><path pathLength="1" d="M7.2 12.4l3.2 3.2 6.4-6.6"/></svg></span></button>
-    </div>
-  </section>
-
-  <div class="search" id="searchWrap" hidden><input id="q" type="search" placeholder="Notizen durchsuchen" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Notizen durchsuchen"></div>
 
   <section class="sec" id="pinSec" hidden>
     <button class="sh" id="pinTog" type="button" aria-expanded="true" aria-controls="pinBody"><span><b>Angeheftet</b><span class="n" id="pinN"></span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -52,6 +37,25 @@
     <p class="empty" id="empty" hidden></p>
   </section>
 </main>
+
+<nav class="dock" aria-label="Aktionen">
+  <button class="circ" id="setBtn" type="button" aria-label="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  <label class="spill"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="q" type="search" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Notizen durchsuchen"></label>
+  <button class="circ add" id="newBtn" type="button" aria-label="Neue Notiz"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+</nav>
+
+<section class="cmp" id="cmp" hidden aria-label="Neue Notiz" role="dialog" aria-modal="true">
+  <button class="circ" id="cmpClose" type="button" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="card">
+    <textarea id="ta" rows="2" placeholder="Neue Notiz" autocapitalize="sentences" enterkeyhint="enter" aria-label="Neue Notiz"></textarea>
+    <div class="err" id="err" role="status"></div>
+    <div class="chips">
+      <button class="dchip" id="todoBtn" type="button"><span class="cb"></span>Aufgabe</button>
+      <button class="dchip off" id="chip" type="button" aria-label="Termin-Vorschlag, antippen wechselt den Kalender"><i class="dot"></i><span id="chipT"></span></button>
+    </div>
+  </div>
+  <button class="go" id="saveBtn" type="button" aria-label="Sichern"><svg viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M6.5 12.6l3.6 3.6 7.4-7.6"/></svg></button>
+</section>
 
 <div class="scrim" id="scrim" hidden></div>
 <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="shT">
