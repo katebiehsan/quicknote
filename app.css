@@ -210,3 +210,21 @@ button.sh:active { transform: scale(0.98); }
 .go.done { animation: go-pop 300ms var(--ease-out); }
 @keyframes go-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes go-pop { 0% { transform: scale(0.94); } 100% { transform: scale(1); } }
+
+/* ---------- Feinschliff (runder, ruhiger) ---------- */
+.top { justify-content: space-between; align-items: center; min-height: 64px; padding-top: 8px; }
+.top .big { margin: 0; font-size: 34px; font-weight: 600; letter-spacing: -0.03em; }
+.sh b { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--hint); }
+.sec { margin-top: 24px; }
+.sec .sh { padding: 4px 0; }
+.wdot { display: inline-block; width: 6px; height: 6px; border-radius: 3px; background: var(--warn); margin-right: 6px; vertical-align: 2px; }
+/* Löschen als runder Knopf in der Zeile statt eckiger Fläche */
+.bgR { top: 8px; bottom: 8px; right: 0; }
+.bgR button { width: 84px; border-radius: 14px; background: var(--err-bg); border: 1px solid var(--err-line); transition: transform 160ms ease-out; }
+.bgR button:active { transform: scale(0.97); }
+.bgL { top: 8px; bottom: 8px; border-radius: 14px; }
+.front { border-radius: 14px; }
+/* Toast rund, kompakt, wie Sonner */
+.toast { border-radius: 18px; padding: 10px 10px 10px 16px; max-width: 360px; }
+.toast button { border-radius: 12px; padding: 8px 12px; }
+.pill { padding: 6px 12px; }

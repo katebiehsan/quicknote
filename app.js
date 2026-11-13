@@ -257,11 +257,13 @@
   /* ---------- Status oben ---------- */
   function updatePill() {
     const wait = [...outbox.values()].filter((o) => o.state === "wait").length;
+    const sent = [...outbox.values()].some((o) => o.state === "sent");
     let text, cls = "";
     if (!token) { text = "Schlüssel fehlt"; cls = "bad"; }
     else if (authBad) { text = "Schlüssel prüfen"; cls = "bad"; }
     else if (wait) { text = wait + " wartet"; cls = "wait"; }
-    else text = "Alles übertragen";
+    else if (sent) text = "Nächster Sync " + nextImport().replace(/^um /, "").replace(/^morgen um /, "morgen ");
+    else text = "Alles in Second Brain";
     const p = $("pill"), t = $("pillT");
     if (t.textContent === text && p.dataset.cls === cls) return;
     const apply = () => { t.textContent = text; p.className = "pill" + (cls ? " " + cls : ""); p.dataset.cls = cls; };
@@ -278,16 +280,14 @@
   }
   function rowInner(n) {
     const p = parse(n.text);
-    let h = '<div class="t1"><b>' + esc(p.title) + "</b><time>" + esc(shortDate(n.updated || n.created)) + "</time></div>";
+    const waiting = opState(n.id) === "wait";
+    let h = '<div class="t1"><b>' + esc(p.title) + "</b><time>" + (waiting ? '<i class="wdot" aria-label="Wartet auf Netz"></i>' : "") + esc(shortDate(n.updated || n.created)) + "</time></div>";
     if (p.sub) h += '<div class="sub">' + esc(p.sub) + "</div>";
     if (p.todos.length) {
       h += '<div class="todos">' + p.todos.slice(0, 5).map((t) => '<button type="button" class="todo' + (t.on ? " on" : "") + '" data-line="' + t.i + '" aria-pressed="' + t.on + '"><span class="cb">' + CHECK + '</span><span class="tx">' + esc(t.t || " ") + "</span></button>").join("") + "</div>";
       if (p.todos.length > 5) h += '<div class="more">+' + (p.todos.length - 5) + " weitere</div>";
     }
     if (n.vorschlag && n.vorschlag.date && !n.vorschlag.done) h += '<div class="st"><i class="dot' + (n.vorschlag.cal === "claude" ? " claude" : "") + '"></i>Termin-Vorschlag · ' + esc(terminLabel(n.vorschlag)) + "</div>";
-    const st = opState(n.id);
-    if (st === "wait") h += '<div class="st w">' + (token ? "Wartet auf Netz" : "Wartet auf Schlüssel") + "</div>";
-    else if (st === "sent") h += '<div class="st">Kommt ' + esc(nextImport()) + " in Second Brain</div>";
     return h;
   }
   function makeRow(n) {
@@ -304,9 +304,16 @@
   }
   function leave(el) {
     el.dataset.leaving = "1";
+    if (openRow === el) openRow = null;
+    const f = el.querySelector(".front");
+    const gone = () => { if (el.isConnected) el.remove(); };
+    if (reduce || !el.offsetParent) { gone(); return; }
     const h = el.offsetHeight;
-    const a = el.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: reduce ? 120 : 220, easing: EO, fill: "forwards" });
-    a.onfinish = () => el.remove();
+    /* Emil: erst zur Seite gleiten, dann die Lücke weich schließen */
+    const slide = el._swiped ? f.animate([{ transform: getComputedStyle(f).transform }, { transform: "translateX(-110%)", opacity: 0 }], { duration: 180, easing: EO, fill: "forwards" }) : null;
+    const close = () => { const a = el.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: 220, easing: EO, fill: "forwards" }); a.onfinish = gone; };
+    if (slide) slide.onfinish = close; else close();
+    setTimeout(gone, 700);
   }
   function paint(container, items) {
     const existing = new Map();
@@ -337,13 +344,13 @@
     const hits = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
     const pinned = hits.filter((n) => n.angeheftet), rest = hits.filter((n) => !n.angeheftet);
     $("pinSec").hidden = !pinned.length;
+    $("noteSec").querySelector(".sh").hidden = !rest.length && pinned.length > 0;
     $("pinN").textContent = pinned.length;
     paint($("pinList"), pinned);
     paint($("list"), rest);
     const empty = $("empty");
     if (!all.length) { empty.hidden = false; empty.textContent = "Noch keine Notizen. Was du hier sicherst, landet stündlich in Second Brain."; }
     else if (q && !hits.length) { empty.hidden = false; empty.textContent = "Keine Notiz passt zu „" + query.trim() + "“."; }
-    else if (!rest.length && pinned.length) { empty.hidden = false; empty.textContent = "Alles Weitere erscheint hier."; }
     else empty.hidden = true;
     fresh.clear();
     updatePill();
@@ -396,7 +403,7 @@
       openNote(r.dataset.id);
     });
     f.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target === f) openNote(r.dataset.id); });
-    r.querySelector(".del").addEventListener("click", () => { openRow = null; removeNote(r.dataset.id); });
+    r.querySelector(".del").addEventListener("click", () => { openRow = null; r._swiped = true; removeNote(r.dataset.id); });
   }
 
   /* ---------- Aktionen ---------- */
@@ -597,7 +604,7 @@
   /* ---------- Toast nach Sonner ---------- */
   function toast({ title, desc, type, action, duration }) {
     const box = $("toaster");
-    while (box.children.length >= 3) box.firstChild.remove();
+    for (const old of [...box.children]) { old.classList.remove("on"); setTimeout(() => old.remove(), 300); }
     const el = document.createElement("div");
     el.className = "toast" + (type === "err" ? " err" : "");
     el.setAttribute("role", type === "err" ? "alert" : "status");
