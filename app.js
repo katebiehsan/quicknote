@@ -601,9 +601,9 @@
     if (e.key === "Escape") { e.preventDefault(); if (sheetMode === "note") finishNote(); else closeSheet(); }
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && sheetMode === "note") { e.preventDefault(); finishNote(); }
   });
-  $("setBtn").addEventListener("click", openSettings);
+  /* Status-Symbol öffnet die Einstellungen (Schlüssel, Stand) */
   $("pill").addEventListener("click", () => {
-    if (!token || authBad) { openSettings(); return; }
+    openSettings(); flush(); pullMirror(); return;
     const wait = [...outbox.values()].filter((o) => o.state === "wait").length;
     if (wait) toast({ title: wait === 1 ? "1 Notiz wartet" : wait + " Notizen warten", desc: navigator.onLine ? "Wird gerade übertragen." : "Wird übertragen, sobald du online bist." });
     else if ([...outbox.values()].some((o) => o.state === "sent")) toast({ title: "Übertragen", desc: "Kommt " + nextImport() + " in Second Brain." });

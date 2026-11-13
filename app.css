@@ -271,3 +271,15 @@ button.sh:active { transform: scale(0.98); }
 .pill.off .cx, .pill.bad .cx { opacity: 1; }
 .pill.bad { color: var(--err); background: var(--err-bg); border-color: var(--err-line); }
 @media (prefers-reduced-motion: reduce) { .pill.busy .cl { animation: none; } }
+/* Status als Kettenglied; kein Titel, Kopf nur mit Symbol */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.top { justify-content: flex-end; min-height: 52px; padding-top: 20px; }
+.top + .sec, .top + .sec[hidden] + .sec { margin-top: 0; }
+.pill .pcloud { display: none !important; }
+.pill .plink { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.pill .plink .cx { opacity: 0; }
+.pill.busy .plink .lk, .pill.off .plink .lk, .pill.bad .plink .lk { opacity: 0; }
+.pill.off .plink .cx, .pill.bad .plink .cx { opacity: 1; }
+.pill.busy .plink { animation: qn-pulse 1.2s ease-in-out infinite; }
+.pill.ok .plink { animation: cb-pop 260ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .pill.busy .plink { animation: none; } }

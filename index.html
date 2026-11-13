@@ -21,8 +21,8 @@
 <body>
 <main class="app">
   <header class="top">
-    <h1 class="big">Quicknote</h1>
-    <button class="pill" id="pill" type="button" aria-label="Übertragungsstand"><svg class="pcloud" viewBox="0 0 24 24" aria-hidden="true"><path class="cl" d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.2 9.1 4.5 4.5 0 0 0 7 18z"/><path class="ck" pathLength="1" d="M9.2 13.4l2 2 3.8-4"/><path class="cx" d="M4 4l16 16"/></svg><svg class="pok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12"/><path pathLength="1" d="M7.2 12.4l3.2 3.2 6.4-6.6"/></svg><span id="pillT">Lädt</span></button>
+    <h1 class="sr-only">Quicknote</h1>
+    <button class="pill" id="pill" type="button" aria-label="Übertragungsstand"><svg class="plink" viewBox="0 0 24 24" aria-hidden="true"><path class="lk" d="M10 14l4-4"/><path d="M9 11l-2 2a3 3 0 0 0 4 4l2-2M15 13l2-2a3 3 0 0 0-4-4l-2 2"/><path class="cx" d="M5 5l14 14"/></svg><svg class="pok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12"/><path pathLength="1" d="M7.2 12.4l3.2 3.2 6.4-6.6"/></svg><span id="pillT">Lädt</span></button>
   </header>
 
 
@@ -39,7 +39,6 @@
 </main>
 
 <nav class="dock" aria-label="Aktionen">
-  <button class="circ" id="setBtn" type="button" aria-label="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   <label class="spill"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="q" type="search" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Notizen durchsuchen"></label>
   <button class="circ add" id="newBtn" type="button" aria-label="Neue Notiz"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </nav>
