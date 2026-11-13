@@ -158,7 +158,10 @@
     const prev = [...outbox.values()].find((o) => o.noteId === note.id && o.state === "wait");
     const snap = { id: note.id, text: note.text, created: note.created, updated: note.updated, angeheftet: !!note.angeheftet };
     if (note.vorschlag) snap.vorschlag = note.vorschlag;
-    let op = { opId: uid("op"), noteId: note.id, kind, ts: nowIso(), base: prev ? prev.base : base, note: snap, state: "wait" };
+    /* Text, den Quicknote zuletzt aus Second Brain kannte: damit führt der Abgleich zeilenweise zusammen */
+    const known = notes.get(note.id);
+    const baseText = prev ? prev.baseText : (known && known._mt != null ? known._mt : null);
+    let op = { opId: uid("op"), noteId: note.id, kind, ts: nowIso(), base: prev ? prev.base : base, baseText, note: snap, state: "wait" };
     /* Neu angelegt, noch nie übertragen und gleich wieder gelöscht: einfach weglassen */
     const drop = kind === "delete" && prev && prev.kind === "upsert" && prev.base == null && !sentFor(note.id) && !note._m;
     if (drop) op = null;
@@ -186,6 +189,7 @@
       for (const op of waiting) {
         if (!outbox.has(op.opId)) continue;
         const payload = { v: 1, opId: op.opId, kind: op.kind, ts: op.ts, base: op.base, note: op.note };
+        if (op.baseText != null) payload.baseText = op.baseText;
         const body = "<!-- quicknote -->\n```json\n" + JSON.stringify(payload, null, 1) + "\n```\n";
         let r;
         try {
@@ -234,10 +238,10 @@
     settled.forEach((id) => outbox.delete(id));
     /* Neuer Stand = Second Brain + alles, was noch unterwegs ist */
     const next = new Map();
-    for (const n of mir.values()) next.set(n.id, { id: n.id, text: n.text || "", created: n.created || n.updated, updated: n.updated || n.created, angeheftet: !!n.angeheftet, gruppe: n.gruppe || null, vorschlag: n.vorschlag || null, _m: n.updated || n.created || "x" });
+    for (const n of mir.values()) next.set(n.id, { id: n.id, text: n.text || "", created: n.created || n.updated, updated: n.updated || n.created, angeheftet: !!n.angeheftet, gruppe: n.gruppe || null, vorschlag: n.vorschlag || null, _m: n.updated || n.created || "x", _mt: n.text || "" });
     for (const o of [...outbox.values()].sort((a, b) => a.ts.localeCompare(b.ts))) {
       if (o.kind === "delete") next.delete(o.noteId);
-      else next.set(o.noteId, { ...(next.get(o.noteId) || {}), ...o.note, _m: (mir.get(o.noteId) || {}).updated || null });
+      else { const mm = mir.get(o.noteId); next.set(o.noteId, { ...(next.get(o.noteId) || {}), ...o.note, _m: mm ? mm.updated : null, _mt: mm ? mm.text || "" : null }); }
     }
     await DB.run(["notes", "outbox", "kv"], (s) => {
       settled.forEach((id) => s("outbox").delete(id));
