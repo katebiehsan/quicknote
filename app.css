@@ -92,7 +92,7 @@ button.sh:active { transform: scale(0.98); }
 /* Blatt */
 .scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.6); opacity: 0; transition: opacity 300ms ease; }
 .scrim.on { opacity: 1; }
-.sheet { position: fixed; left: 0; right: 0; bottom: 0; top: calc(40px + env(safe-area-inset-top, 0px)); z-index: 41; background: var(--surface); border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; transform: translateY(100%); transition: transform 360ms var(--ease-drawer); display: flex; flex-direction: column; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; top: calc(40px + env(safe-area-inset-top, 0px)); z-index: 41; background: rgba(255, 255, 255, 0.14); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4); border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 360ms var(--ease-drawer); display: flex; flex-direction: column; }
 .sheet.on { transform: none; }
 .sh-in { flex: 1; min-height: 0; width: 100%; max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .sh-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 52px; }
@@ -189,7 +189,7 @@ button.sh:active { transform: scale(0.98); }
 .dock { transition: opacity 160ms ease; }
 body.composing .dock { opacity: 0; pointer-events: none; }
 body.composing .toaster { bottom: calc(var(--kb, 0px) + 160px + env(safe-area-inset-bottom, 0px)); }
-@media (prefers-reduced-transparency: reduce) { .plus, .dock .circ, .spill { background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; } .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-transparency: reduce) { .sheet { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } .plus, .dock .circ, .spill { background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; } .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @media (prefers-contrast: more) { .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 0 0 1px rgba(235, 235, 245, 0.3); } }
 
 /* ---------- Feinschliff (runder, ruhiger) ---------- */

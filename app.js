@@ -10,6 +10,12 @@
   const SYNC_FIRST = 8, SYNC_LAST = 23;
   const EO = "cubic-bezier(0.23, 1, 0.32, 1)";
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Neue App-Version: erst neu laden, wenn gerade nichts offen ist und nichts getippt wird */
+  let updateReady = false;
+  function reloadIfIdle() {
+    if (!updateReady || !$("cmp").hidden || !$("sheet").hidden || $("ta").value) return;
+    updateReady = false; location.reload();
+  }
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const pad = (n) => String(n).padStart(2, "0");
@@ -590,7 +596,7 @@
     if (morph) { morph.cancel(); morph = null; }
     if (reduceMotion()) { cmp.hidden = true; return; }
     const a = morph = card.animate([{ clipPath: live }, { clipPath: btnClip(card) }], { duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" });
-    a.onfinish = () => { if (morph === a) { a.cancel(); morph = null; cmp.hidden = true; } };
+    a.onfinish = () => { if (morph === a) { a.cancel(); morph = null; cmp.hidden = true; reloadIfIdle(); } };
   }
   $("newBtn").addEventListener("click", openCompose);
   $("cmpClose").addEventListener("click", closeCompose);
@@ -638,7 +644,7 @@
     sheetMode = null; cur = null;
     document.activeElement && document.activeElement.blur && document.activeElement.blur();
     $("scrim").classList.remove("on"); $("sheet").classList.remove("on");
-    setTimeout(() => { if (!sheetMode) { $("scrim").hidden = true; $("sheet").hidden = true; $("shBody").innerHTML = ""; } }, 380);
+    setTimeout(() => { if (!sheetMode) { $("scrim").hidden = true; $("sheet").hidden = true; $("shBody").innerHTML = ""; reloadIfIdle(); } }, 380);
   }
   function openNote(id) {
     const n = notes.get(id); if (!n) return;
@@ -671,6 +677,7 @@
       '<div class="row2"><button type="submit" class="sbtn" data-a="savetok">Sichern und prüfen</button></div></form>' +
       '<label>Stand</label><p>' + (mirrorAt ? "Zuletzt aus Second Brain: " + esc(longDate(mirrorAt)) : "Noch kein Abgleich aus Second Brain.") + "<br>Nächster Abgleich: " + esc(nextImport().replace(/^um /, "heute um ")) + " Uhr<br>Abgleich stündlich von " + SYNC_FIRST + " bis " + SYNC_LAST + " Uhr.</p></div>";
     openSheet("Einstellungen", html, "set");
+    if (window.caches) caches.keys().then((k) => { const v = k.find((x) => x.startsWith("qn-")), s = document.querySelector("#shBody .set"); if (v && s) { const p = document.createElement("p"); p.textContent = "Version " + v.slice(3); s.appendChild(p); } });
   }
   async function saveToken(btn) {
     const v = ($("tok").value || "").trim();
@@ -743,9 +750,15 @@
   }
   window.addEventListener("online", () => { flush(); pullMirror(); });
   window.addEventListener("offline", updatePill);
-  document.addEventListener("visibilitychange", () => { if (document.hidden) { if (draftT) flushDraft(); } else { flush(); pullMirror(); render(); } });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { if (draftT) flushDraft(); reloadIfIdle(); } else { flush(); pullMirror(); render(); } });
   setInterval(() => { if (!document.hidden) flush(); }, 60000);
   setInterval(() => { if (!document.hidden) pullMirror(); }, 5 * 60000);
-  if ("serviceWorker" in navigator) window.addEventListener("load", () => (window.requestIdleCallback || setTimeout)(() => navigator.serviceWorker.register("sw.js").catch(() => {})));
+  if ("serviceWorker" in navigator) {
+    const had = !!navigator.serviceWorker.controller;   // beim ersten Installieren nicht neu laden
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (had) { updateReady = true; reloadIfIdle(); } });
+    window.addEventListener("load", () => (window.requestIdleCallback || setTimeout)(() => navigator.serviceWorker.register("sw.js").then((reg) => {
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });   // beim Öffnen nach neuer Version suchen
+    }).catch(() => {})));
+  }
   start();
 })();
