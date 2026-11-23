@@ -24,7 +24,7 @@
 
 
   <section class="sec" id="pinSec" hidden>
-    <button class="sh" id="pinTog" type="button" aria-expanded="true" aria-controls="pinBody"><span><b>Angeheftet</b><span class="n" id="pinN"></span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <button class="sh" id="pinTog" type="button" aria-expanded="true" aria-controls="pinBody"><span><b>Angeheftet</b><span class="n" id="pinN"></span></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.6 7.2 10.2h9.6z"/></svg></button>
     <div class="body" id="pinBody"><div><div class="list" id="pinList"></div></div></div>
   </section>
 
@@ -36,22 +36,22 @@
 </main>
 
 <nav class="dock" aria-label="Aktionen">
-  <button class="npill" id="newBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Neue Notiz</button>
+  <button class="npill" id="newBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.2 5.5h3.6v4.7h4.7v3.6h-4.7v4.7h-3.6v-4.7H5.5v-3.6h4.7z"/></svg>Neue Notiz</button>
   <label class="spill" id="qWrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="q" type="search" placeholder="Suchen" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-label="Notizen durchsuchen"></label>
-  <button class="circ" id="qBtn" type="button" aria-label="Suchen" aria-expanded="false" aria-controls="qWrap"><svg class="i-s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><svg class="i-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="circ" id="qBtn" type="button" aria-label="Suchen" aria-expanded="false" aria-controls="qWrap"><svg class="i-s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><svg class="i-x" viewBox="0 0 24 24" aria-hidden="true"><path transform="rotate(45 12 12)" d="M10.2 5.5h3.6v4.7h4.7v3.6h-4.7v4.7h-3.6v-4.7H5.5v-3.6h4.7z"/></svg></button>
 </nav>
 
 <section class="cmp" id="cmp" hidden aria-label="Neue Notiz" role="dialog" aria-modal="true">
-  <button class="circ" id="cmpClose" type="button" aria-label="Schließen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="cscrim" id="cmpClose" type="button" aria-label="Schließen" tabindex="-1"></button>
   <div class="card">
-    <textarea id="ta" rows="2" placeholder="Neue Notiz" autocapitalize="sentences" enterkeyhint="enter" aria-label="Neue Notiz"></textarea>
+    <textarea id="ta" rows="1" placeholder="Neue Notiz" autocapitalize="sentences" enterkeyhint="enter" aria-label="Neue Notiz"></textarea>
     <div class="err" id="err" role="status"></div>
     <div class="chips">
       <button class="dchip" id="todoBtn" type="button"><span class="cb"></span>Aufgabe</button>
       <button class="dchip off" id="chip" type="button" aria-label="Termin-Vorschlag, antippen wechselt den Kalender"><i class="dot"></i><span id="chipT"></span></button>
     </div>
+    <button class="go" id="saveBtn" type="button" aria-label="Sichern"><svg viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M6.5 12.6l3.6 3.6 7.4-7.6"/></svg></button>
   </div>
-  <button class="go" id="saveBtn" type="button" aria-label="Sichern"><svg viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="M6.5 12.6l3.6 3.6 7.4-7.6"/></svg></button>
 </section>
 
 <div class="scrim" id="scrim" hidden></div>

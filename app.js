@@ -316,7 +316,7 @@
   function makeRow(n) {
     const r = document.createElement("div");
     r.className = "row"; r.dataset.id = n.id;
-    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v7"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
+    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v6.5"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
     wireRow(r);
     return r;
   }
@@ -544,16 +544,16 @@
     if (e.key === "Escape") { e.preventDefault(); closeCompose(); }
   });
 
-  /* ---------- Schreiben im Vollbild ---------- */
+  /* ---------- Schreiben in der Glas-Pille ---------- */
   const cmp = $("cmp");
   function openCompose() {
-    cmp.hidden = false;
+    cmp.hidden = false; document.body.classList.add("composing");
     ta.focus({ preventScroll: true });          // noch im Tipp, damit iOS die Tastatur öffnet
     grow(ta); updateChip();
     requestAnimationFrame(() => cmp.classList.add("on"));
   }
   function closeCompose() {
-    ta.blur(); cmp.classList.remove("on");
+    ta.blur(); cmp.classList.remove("on"); document.body.classList.remove("composing");
     setTimeout(() => { if (!cmp.classList.contains("on")) cmp.hidden = true; }, 260);
   }
   $("newBtn").addEventListener("click", openCompose);
