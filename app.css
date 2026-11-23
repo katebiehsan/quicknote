@@ -23,7 +23,8 @@ input, textarea { font-family: inherit; font-size: 16px; }
 .app { max-width: 640px; margin: 0 auto; min-height: 100dvh; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) calc(96px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 
 /* Kopf */
-.top { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-height: 52px; padding-top: 32px; }
+.top { position: relative; height: 0; margin-top: 40px; z-index: 2; }
+.top .pill { position: absolute; right: 0; top: -6px; margin: 0; }
 .top + .sec, .top + .sec[hidden] + .sec { margin-top: 0; }
 /* Status oben: runder Knopf mit Kettenglied (grün = alles in Second Brain, pulsiert = überträgt, durchgestrichen = offline, rot = Schlüssel) */
 .pill { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; gap: 0; margin-right: 4px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; white-space: nowrap; transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, transform 160ms ease-out; }
