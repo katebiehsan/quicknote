@@ -145,15 +145,16 @@ button.sh:active { transform: scale(0.98); }
 
 /* Leiste unten: im Daumenbereich, wandert mit der Tastatur */
 .dock { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: flex; align-items: center; gap: 8px; max-width: 640px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
-.dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, #000 60%, rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
+.dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
 .spill { flex: 1; min-width: 0; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
 .spill:focus-within { border-color: rgba(235, 235, 245, 0.3); }
 .spill svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .spill input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); padding: 0; -webkit-appearance: none; }
 .spill input::placeholder { color: var(--text-2); }
 .spill input::-webkit-search-cancel-button { -webkit-appearance: none; }
-.plus { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; background: var(--ink); color: #000000; transition: transform 160ms ease-out, background-color 160ms ease; }
-.plus:active { transform: scale(0.97); background: #d8d8d8; }
+.plus { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; color: var(--ink); transition: transform 160ms ease-out, background-color 160ms ease; }
+.plus, .dock .circ { background: rgba(255, 255, 255, 0.14); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
+.plus:active, .dock .circ:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.22); }
 .plus svg { width: 22px; height: 22px; fill: currentColor; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
 .dock:not(.search) #qBtn, .dock.search .plus { display: none; }
 
@@ -177,10 +178,10 @@ button.sh:active { transform: scale(0.98); }
 .dchip .cb { width: 18px; height: 18px; }
 .dchip.off { opacity: 0; transform: scale(0.95); filter: blur(2px); pointer-events: none; width: 0; padding: 0; border-width: 0; margin-left: -8px; }
 #chip:not(.off) { border-style: solid; color: var(--ink); }
-.go { position: absolute; right: 2px; bottom: 2px; width: 44px; height: 44px; border-radius: 22px; background: var(--ink); display: grid; place-items: center; transition: transform 160ms ease-out, opacity 120ms ease; }
+.go { position: absolute; right: 2px; bottom: 2px; width: 44px; height: 44px; border-radius: 22px; background: rgba(255, 255, 255, 0.22); display: grid; place-items: center; transition: transform 160ms ease-out, opacity 120ms ease; }
 .cmp.on .go { transition: transform 160ms ease-out, opacity 160ms ease 90ms; }
 .go:active { transform: scale(0.95); }
-.go svg { width: 22px; height: 22px; fill: none; stroke: #000000; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.go svg { width: 22px; height: 22px; fill: none; stroke: #ffffff; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
 .go path { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .go.done path { animation: go-draw 380ms var(--ease-out); }
 .go.done { animation: go-pop 300ms var(--ease-out); }
@@ -189,7 +190,7 @@ button.sh:active { transform: scale(0.98); }
 .dock { transition: opacity 160ms ease; }
 body.composing .dock { opacity: 0; pointer-events: none; }
 body.composing .toaster { bottom: calc(var(--kb, 0px) + 160px + env(safe-area-inset-bottom, 0px)); }
-@media (prefers-reduced-transparency: reduce) { .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-transparency: reduce) { .plus, .dock .circ { background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; } .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @media (prefers-contrast: more) { .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 0 0 1px rgba(235, 235, 245, 0.3); } }
 
 /* ---------- Feinschliff (runder, ruhiger) ---------- */

@@ -317,9 +317,11 @@
     const r = document.createElement("div");
     r.className = "row"; r.dataset.id = n.id;
     r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v6.5"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
-    wireRow(r);
     return r;
   }
+  /* Gesten und Klicks werden erst beim ersten Anfassen einer Zeile verdrahtet: kein Aufwand pro Zeile beim Zeichnen */
+  const wireOnTouch = (e) => { const r = e.target.closest && e.target.closest(".row"); if (r && !r._w) { r._w = 1; wireRow(r); } };
+  for (const t of ["pointerdown", "click", "keydown", "focusin"]) document.querySelector(".app").addEventListener(t, wireOnTouch, true);
   function enter(el) {
     if (reduce) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 }); return; }
     const h = el.offsetHeight;
@@ -371,33 +373,45 @@
       const at = prev ? prev.nextSibling : container.firstChild;
       if (!el) {
         el = makeRow(n);
-        el.querySelector(".front").innerHTML = html; el._h = html;
+        el.querySelector(".front").innerHTML = html; el._h = html; el._p = !!n.angeheftet;
         container.insertBefore(el, at);
         if (fresh.has(n.id)) enter(el);
       } else {
         existing.delete(n.id);
         if (el._h !== html) { el.querySelector(".front").innerHTML = html; el._h = html; }
-        el.querySelector(".bgL span").textContent = n.angeheftet ? "Lösen" : "Anheften";
+        if (el._p !== !!n.angeheftet) { el._p = !!n.angeheftet; el.querySelector(".bgL span").textContent = el._p ? "Lösen" : "Anheften"; }
         if (at !== el) container.insertBefore(el, at);
       }
       prev = el;
     }
-    for (const el of existing.values()) leave(el);
+    if (existing.size > 8) { for (const el of existing.values()) el.remove(); }   // Filter oder Seitenwechsel: ohne Animation
+    else for (const el of existing.values()) leave(el);
   }
+  /* Sortieren ohne localeCompare (ISO-Zeiten sortieren als Text richtig), Kleinschreibung je Notiz nur einmal */
+  const byNewest = (a, b) => { const x = String(a.updated || a.created || ""), y = String(b.updated || b.created || ""); return x < y ? 1 : x > y ? -1 : 0; };
+  const lcCache = new WeakMap();
+  const lower = (n) => { let c = lcCache.get(n); if (!c || c.t !== n.text) { c = { t: n.text, l: String(n.text).toLowerCase() }; lcCache.set(n, c); } return c.l; };
+  /* Liste in Seiten: nur die ersten Notizen zeichnen, der Rest kommt beim Scrollen */
+  const PAGE = 60; let limit = PAGE;
+  const sentinel = $("sentinel");
+  const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { limit += PAGE; scheduleRender(); } }, { rootMargin: "800px 0px" });
   let rq = 0;
   function scheduleRender() { if (!rq) rq = requestAnimationFrame(() => { rq = 0; render(); }); }
   function render() {
     if (rq) { cancelAnimationFrame(rq); rq = 0; }
     buildOpIdx();
     const q = query.trim().toLowerCase();
-    const all = [...notes.values()].filter((n) => String(n.text || "").trim() && !pendingDel.has(n.id) && !(opIdx.get(n.id) || {}).del).sort((a, b) => String(b.updated || b.created).localeCompare(String(a.updated || a.created)));
-    const hits = q ? all.filter((n) => n.text.toLowerCase().includes(q)) : all;
+    const all = [...notes.values()].filter((n) => String(n.text || "").trim() && !pendingDel.has(n.id) && !(opIdx.get(n.id) || {}).del).sort(byNewest);
+    const hits = q ? all.filter((n) => lower(n).includes(q)) : all;
     const pinned = hits.filter((n) => n.angeheftet), rest = hits.filter((n) => !n.angeheftet);
+    const hasMore = rest.length > limit;
     $("pinSec").hidden = !pinned.length;
     $("noteSec").querySelector(".sh").hidden = !rest.length && pinned.length > 0;
     $("pinN").textContent = pinned.length;
     paint($("pinList"), pinned);
-    paint($("list"), rest);
+    paint($("list"), hasMore ? rest.slice(0, limit) : rest);
+    sentinel.hidden = !hasMore;
+    if (hasMore) { io.unobserve(sentinel); io.observe(sentinel); }   // prüft erneut, ob noch etwas nachgeladen werden muss
     const empty = $("empty");
     if (!all.length) { empty.hidden = false; empty.textContent = "Noch keine Notizen. Was du hier sicherst, landet stündlich in Second Brain."; }
     else if (q && !hits.length) { empty.hidden = false; empty.textContent = "Keine Notiz passt zu „" + query.trim() + "“."; }
@@ -507,7 +521,10 @@
     chip.classList.remove("off");
   }
   ta.value = ls.get("qn-draft") || "";
-  ta.addEventListener("input", () => { ls.set("qn-draft", ta.value || null); $("err").textContent = ""; grow(ta); updateChip(); });
+  let draftT = 0;
+  const flushDraft = () => { clearTimeout(draftT); draftT = 0; ls.set("qn-draft", ta.value || null); };   // localStorage ist synchron: nicht bei jedem Tastendruck
+  ta.addEventListener("input", () => { clearTimeout(draftT); draftT = setTimeout(flushDraft, 400); $("err").textContent = ""; grow(ta); updateChip(); });
+  window.addEventListener("pagehide", flushDraft);
   chip.addEventListener("pointerdown", (e) => e.preventDefault());
   chip.addEventListener("click", () => { if (!lastDetect) return; calOverride = (calOverride || lastDetect.cal) === "claude" ? "privat" : "claude"; updateChip(); });
   /* Knöpfe nehmen dem Textfeld nicht den Fokus, damit die Tastatur offen bleibt */
@@ -580,7 +597,8 @@
   /* Tastaturhöhe messen, damit Leiste und Haken direkt darüber sitzen */
   if (window.visualViewport) {
     const vv = window.visualViewport;
-    const kb = () => document.documentElement.style.setProperty("--kb", Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + "px");
+    let kbv = -1;
+    const kb = () => { const v = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)); if (v !== kbv) { kbv = v; document.documentElement.style.setProperty("--kb", v + "px"); } };
     vv.addEventListener("resize", kb); vv.addEventListener("scroll", kb); kb();
   }
 
@@ -594,7 +612,7 @@
   qEl.addEventListener("focus", () => setSearch(true));
   qBtn.addEventListener("pointerdown", (e) => { if (dock.classList.contains("search")) e.preventDefault(); }); // Fokus halten, sonst schließt blur vorher
   qBtn.addEventListener("click", () => setSearch(!dock.classList.contains("search")));
-  qEl.addEventListener("input", (e) => { query = e.target.value; render(); });
+  qEl.addEventListener("input", (e) => { query = e.target.value; limit = PAGE; scheduleRender(); });
   qEl.addEventListener("keydown", (e) => {
     if (e.key === "Escape") { e.preventDefault(); setSearch(false); }
     if (e.key === "Enter") qEl.blur();
@@ -725,9 +743,9 @@
   }
   window.addEventListener("online", () => { flush(); pullMirror(); });
   window.addEventListener("offline", updatePill);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) { flush(); pullMirror(); render(); } });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { if (draftT) flushDraft(); } else { flush(); pullMirror(); render(); } });
   setInterval(() => { if (!document.hidden) flush(); }, 60000);
   setInterval(() => { if (!document.hidden) pullMirror(); }, 5 * 60000);
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  if ("serviceWorker" in navigator) window.addEventListener("load", () => (window.requestIdleCallback || setTimeout)(() => navigator.serviceWorker.register("sw.js").catch(() => {})));
   start();
 })();
