@@ -546,15 +546,34 @@
 
   /* ---------- Schreiben in der Glas-Pille ---------- */
   const cmp = $("cmp");
+  /* Knopf wird zur Pille: die Glas-Karte wächst per Clip-Path aus dem Plus-Knopf, der Inhalt blendet danach ein */
+  let morph = null;
+  const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FULL = "inset(0px 0px 0px 0px round 24px)";
+  function btnClip(card) {
+    const b = $("newBtn").getBoundingClientRect(), r = card.getBoundingClientRect();
+    return "inset(" + [b.top - r.top, r.right - b.right, r.bottom - b.bottom, b.left - r.left].map((v) => v.toFixed(1) + "px").join(" ") + " round 24px)";
+  }
   function openCompose() {
+    const card = cmp.querySelector(".card");
+    if (morph) { morph.cancel(); morph = null; }
     cmp.hidden = false; document.body.classList.add("composing");
     ta.focus({ preventScroll: true });          // noch im Tipp, damit iOS die Tastatur öffnet
     grow(ta); updateChip();
-    requestAnimationFrame(() => cmp.classList.add("on"));
+    const from = btnClip(card);                  // misst mit, bevor die Klasse "on" gesetzt wird
+    cmp.classList.add("on");
+    if (reduceMotion()) return;
+    const a = morph = card.animate([{ clipPath: from }, { clipPath: FULL }], { duration: 320, easing: "cubic-bezier(0.32, 0.72, 0, 1)", fill: "both" });
+    a.onfinish = () => { if (morph === a) { a.cancel(); morph = null; } };
   }
   function closeCompose() {
+    const card = cmp.querySelector(".card");
     ta.blur(); cmp.classList.remove("on"); document.body.classList.remove("composing");
-    setTimeout(() => { if (!cmp.classList.contains("on")) cmp.hidden = true; }, 260);
+    const live = morph ? getComputedStyle(card).clipPath : FULL;
+    if (morph) { morph.cancel(); morph = null; }
+    if (reduceMotion()) { cmp.hidden = true; return; }
+    const a = morph = card.animate([{ clipPath: live }, { clipPath: btnClip(card) }], { duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" });
+    a.onfinish = () => { if (morph === a) { a.cancel(); morph = null; cmp.hidden = true; } };
   }
   $("newBtn").addEventListener("click", openCompose);
   $("cmpClose").addEventListener("click", closeCompose);
@@ -570,10 +589,9 @@
   function setSearch(on) {
     dock.classList.toggle("search", on);
     qBtn.setAttribute("aria-expanded", String(on));
-    qBtn.setAttribute("aria-label", on ? "Suche schließen" : "Suchen");
-    if (on) qEl.focus({ preventScroll: true });     // noch im Tipp, damit iOS die Tastatur öffnet
-    else { qEl.blur(); if (query) { qEl.value = ""; query = ""; render(); } }
+    if (!on) { qEl.blur(); if (query) { qEl.value = ""; query = ""; render(); } }
   }
+  qEl.addEventListener("focus", () => setSearch(true));
   qBtn.addEventListener("pointerdown", (e) => { if (dock.classList.contains("search")) e.preventDefault(); }); // Fokus halten, sonst schließt blur vorher
   qBtn.addEventListener("click", () => setSearch(!dock.classList.contains("search")));
   qEl.addEventListener("input", (e) => { query = e.target.value; render(); });
