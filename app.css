@@ -1,6 +1,4 @@
-/* Quicknote – dunkel, Inter, Abstände 2·4·6·8·10·12·14·16·20·24·32·40·48·64 */
-/* Inter liegt in der App (fonts/, SIL OFL 1.1): kein Laden von Google, sofort da, auch offline */
-@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter.woff2) format("woff2-variations"), url(fonts/inter.woff2) format("woff2"); }
+/* Quicknote – dunkel, SF Pro (Systemschrift), Abstände 2·4·6·8·10·12·14·16·20·24·32·40·48·64 */
 :root {
   color-scheme: dark;
   --page: #000000; --surface: #191919; --raised: #222222;
@@ -12,11 +10,11 @@
   --claude: #D97757; --privat: #6f6f6f;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --font: "Inter", -apple-system, system-ui, sans-serif;
+  --font: -apple-system, system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html { background: var(--page); -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
-body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); font-feature-settings: "cv01", "ss03"; -webkit-font-smoothing: antialiased; font-size: 16px; line-height: 1.5; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; font-size: 16px; line-height: 1.5; }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; text-align: left; }
 button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--text-2); outline-offset: 2px; }
