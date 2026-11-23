@@ -322,7 +322,7 @@
   function makeRow(n) {
     const r = document.createElement("div");
     r.className = "row"; r.dataset.id = n.id;
-    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l-1 6 4 3v2H6v-2l4-3z"/><path d="M12 14v6.5"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
+    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 4.4h5.2l-.7 4.8 2.7 2.6v1.4H7.4v-1.4l2.7-2.6z"/><path d="M12 13.4v6.2"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
     return r;
   }
   /* Gesten und Klicks werden erst beim ersten Anfassen einer Zeile verdrahtet: kein Aufwand pro Zeile beim Zeichnen */
