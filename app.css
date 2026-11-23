@@ -11,6 +11,10 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --font: -apple-system, system-ui, sans-serif;
+  /* Glas-Rezept (gleich in Second Brain, Falak, Quicknote): dunkles Glas, Kante nur oben, Abdunklung dahinter */
+  --glass: rgba(28, 28, 30, 0.3); --glass-blur: blur(10px) saturate(200%);
+  --glass-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-press: rgba(44, 44, 46, 0.6); --scrim: rgba(0, 0, 0, 0.5);
 }
 * { box-sizing: border-box; }
 html { background: var(--page); -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
@@ -91,9 +95,9 @@ button.sh:active { transform: scale(0.98); }
 .todo.on .tx::after { transform: scaleX(1); transition: transform 260ms var(--ease-out) 80ms; }
 
 /* Blatt */
-.scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.6); opacity: 0; transition: opacity 300ms ease; }
+.scrim { position: fixed; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; transition: opacity 300ms ease; }
 .scrim.on { opacity: 1; }
-.sheet { position: fixed; left: 0; right: 0; bottom: 0; top: calc(40px + env(safe-area-inset-top, 0px)); z-index: 41; background: rgba(255, 255, 255, 0.14); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4); border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 360ms var(--ease-drawer); display: flex; flex-direction: column; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; top: calc(40px + env(safe-area-inset-top, 0px)); z-index: 41; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 360ms var(--ease-drawer); display: flex; flex-direction: column; }
 .sheet.on { transform: none; }
 .sh-in { flex: 1; min-height: 0; width: 100%; max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .sh-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 52px; }
@@ -147,14 +151,14 @@ button.sh:active { transform: scale(0.98); }
 .dock { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: flex; align-items: center; gap: 8px; max-width: 640px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
 .dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
 .spill { flex: 1; min-width: 0; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
-.spill:focus-within { background: rgba(255, 255, 255, 0.18); }
+.spill:focus-within { background: var(--glass-press); }
 .spill svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .spill input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); padding: 0; -webkit-appearance: none; }
 .spill input::placeholder { color: var(--text-2); }
 .spill input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .plus { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; color: var(--ink); transition: transform 160ms ease-out, background-color 160ms ease; }
-.plus, .dock .circ, .spill { background: rgba(255, 255, 255, 0.14); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
-.plus:active, .dock .circ:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.22); }
+.plus, .dock .circ, .spill { background: var(--glass); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
+.plus:active, .dock .circ:active { transform: scale(0.97); background: var(--glass-press); }
 .plus svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .dock:not(.search) #qBtn, .dock.search .plus { display: none; }
 
@@ -162,9 +166,9 @@ button.sh:active { transform: scale(0.98); }
 
 /* Neue Notiz: Glas-Pille über der Tastatur, die Liste scheint durch */
 .cmp { position: fixed; inset: 0; z-index: 45; }
-.cscrim { position: absolute; inset: 0; width: 100%; background: rgba(0, 0, 0, 0.45); opacity: 0; cursor: default; transition: opacity 200ms ease; }
+.cscrim { position: absolute; inset: 0; width: 100%; background: var(--scrim); opacity: 0; cursor: default; transition: opacity 200ms ease; }
 .cmp.on .cscrim { opacity: 1; }
-.card { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); max-width: 640px; margin: 0 auto; border-radius: 24px; overflow: hidden; background: rgba(255, 255, 255, 0.14); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4); }
+.card { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); max-width: 640px; margin: 0 auto; border-radius: 24px; overflow: hidden; background: var(--glass); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: var(--glass-shadow); }
 .card > * { opacity: 0; transition: opacity 120ms ease; }
 .cmp.on .card > * { opacity: 1; transition: opacity 160ms ease 90ms; }
 .card textarea { display: block; width: 100%; min-height: 24px; max-height: 40dvh; resize: none; background: transparent; border: 0; outline: none; color: var(--ink); font-size: 17px; font-weight: 400; line-height: 1.4; padding: 16px 20px 0; overflow-wrap: anywhere; }
