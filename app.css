@@ -147,13 +147,13 @@ button.sh:active { transform: scale(0.98); }
 .dock { position: fixed; left: 0; right: 0; bottom: calc(var(--kb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: flex; align-items: center; gap: 8px; max-width: 640px; margin: 0 auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
 .dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
 .spill { flex: 1; min-width: 0; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
-.spill:focus-within { border-color: rgba(235, 235, 245, 0.3); }
+.spill:focus-within { background: rgba(255, 255, 255, 0.18); }
 .spill svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .spill input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); padding: 0; -webkit-appearance: none; }
 .spill input::placeholder { color: var(--text-2); }
 .spill input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .plus { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; color: var(--ink); transition: transform 160ms ease-out, background-color 160ms ease; }
-.plus, .dock .circ { background: rgba(255, 255, 255, 0.14); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
+.plus, .dock .circ, .spill { background: rgba(255, 255, 255, 0.14); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
 .plus:active, .dock .circ:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.22); }
 .plus svg { width: 22px; height: 22px; fill: currentColor; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
 .dock:not(.search) #qBtn, .dock.search .plus { display: none; }
@@ -190,7 +190,7 @@ button.sh:active { transform: scale(0.98); }
 .dock { transition: opacity 160ms ease; }
 body.composing .dock { opacity: 0; pointer-events: none; }
 body.composing .toaster { bottom: calc(var(--kb, 0px) + 160px + env(safe-area-inset-bottom, 0px)); }
-@media (prefers-reduced-transparency: reduce) { .plus, .dock .circ { background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; } .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-transparency: reduce) { .plus, .dock .circ, .spill { background: var(--raised); -webkit-backdrop-filter: none; backdrop-filter: none; } .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @media (prefers-contrast: more) { .card { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 0 0 1px rgba(235, 235, 245, 0.3); } }
 
 /* ---------- Feinschliff (runder, ruhiger) ---------- */
