@@ -27,7 +27,7 @@
   };
   const WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
   const MON = ["Jan.", "Feb.", "März", "Apr.", "Mai", "Juni", "Juli", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."];
-  const CHECK = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.2 2.2L9.5 3.6"/></svg>';
+  const CHECK = '<svg aria-hidden="true"><use href="#sf-checkmark"/></svg>';
 
   /* ---------- IndexedDB ---------- */
   const DB = (() => {
@@ -322,7 +322,7 @@
   function makeRow(n) {
     const r = document.createElement("div");
     r.className = "row"; r.dataset.id = n.id;
-    r.innerHTML = '<div class="bgL"><svg class="pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 4.4h5.2l-.7 4.8 2.7 2.6v1.4H7.4v-1.4l2.7-2.6z"/><path d="M12 13.4v6.2"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
+    r.innerHTML = '<div class="bgL"><svg class="pin" aria-hidden="true"><use class="po" href="#sf-pin"/><use class="pf" href="#sf-pin-fill"/></svg><span>' + (n.angeheftet ? "Lösen" : "Anheften") + '</span></div><div class="bgR"><button type="button" class="del">Löschen</button></div><div class="front" role="button" tabindex="0"></div>';
     return r;
   }
   /* Gesten und Klicks werden erst beim ersten Anfassen einer Zeile verdrahtet: kein Aufwand pro Zeile beim Zeichnen */

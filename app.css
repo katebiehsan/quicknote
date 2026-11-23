@@ -53,7 +53,7 @@ input, textarea { font-family: inherit; font-size: 17px; }
 .sh { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 8px 0; border-radius: 8px; transition: transform 160ms ease-out; }
 button.sh:active { transform: scale(0.98); }
 .sh b { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
-.sh .pinic { width: 14px; height: 14px; flex: none; vertical-align: -1px; margin-right: 8px; fill: currentColor; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; color: #98989d; }
+.sh .pinic { width: 20px; height: 20px; flex: none; vertical-align: -5px; margin-right: 6px; color: #98989d; }
 .sh .n { font-size: 13px; font-weight: 500; color: var(--text-2); margin-left: 8px; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity 160ms ease; }
 .sec.closed .sh .n { opacity: 1; }
 .body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 240ms var(--ease-out), opacity 200ms ease; }
@@ -84,12 +84,11 @@ button.sh:active { transform: scale(0.98); }
 .todos { margin-top: 4px; }
 .todo { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; font-size: 15px; }
 .cb { position: relative; flex: none; width: 22px; height: 22px; border-radius: 11px; border: 1.5px solid var(--line); display: grid; place-items: center; transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease-out; }
-.cb svg { width: 14px; height: 14px; fill: none; stroke: #000000; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.cb svg path { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset 120ms ease-out; }
+.cb svg { width: 18px; height: 18px; color: #000000; --ic-b: 4; clip-path: inset(0 100% 0 0); transition: clip-path 120ms ease-out; }
 .todo:active .cb { transform: scale(0.92); }
 .todo.on .cb { background: var(--ink); border-color: var(--ink); animation: cb-pop 260ms var(--ease-out); }
 @keyframes cb-pop { from { transform: scale(0.9); } to { transform: scale(1); } }
-.todo.on .cb svg path { stroke-dashoffset: 0; transition: stroke-dashoffset 260ms var(--ease-out) 60ms; }
+.todo.on .cb svg { clip-path: inset(0); transition: clip-path 260ms var(--ease-out) 60ms; }
 .tx { position: relative; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); transition: color 200ms ease; }
 .tx::after { content: ""; position: absolute; left: 0; right: 0; top: 52%; height: 1.5px; background: var(--text-2); transform: scaleX(0); transform-origin: left center; transition: transform 200ms var(--ease-out); }
 .todo.on .tx { color: var(--hint); }
@@ -142,9 +141,7 @@ button.sh:active { transform: scale(0.98); }
 .app { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
 .circ { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; background: var(--page); border: 1px solid var(--line); color: var(--text-2); transition: transform 160ms ease-out, background-color 160ms ease; }
 .circ:active { transform: scale(0.97); background: var(--surface); }
-.circ svg { width: 22px; height: 22px; }
-.circ .i-s { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.circ .i-x { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.circ svg { width: 28px; height: 28px; --ic-b: 2.4; }
 .circ.add { background: var(--ink); border-color: var(--ink); color: #000000; }
 .circ.add:active { background: #d8d8d8; }
 
@@ -153,14 +150,14 @@ button.sh:active { transform: scale(0.98); }
 .dock::before { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--kb, 0px) + 88px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0)); z-index: -1; pointer-events: none; }
 .spill { flex: 1; min-width: 0; height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 24px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
 .spill:focus-within { background: var(--glass-press); }
-.spill svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.spill svg { width: 24px; height: 24px; flex: none; --ic-b: 2.4; }
 .spill input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--ink); padding: 0; -webkit-appearance: none; }
 .spill input::placeholder { color: var(--text-2); }
 .spill input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .plus { width: 48px; height: 48px; border-radius: 24px; flex: none; display: grid; place-items: center; color: var(--ink); transition: transform 160ms ease-out, background-color 160ms ease; }
 .plus, .dock .circ, .spill { background: var(--glass); border-color: transparent; color: var(--ink); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.15), 0 1px 4px rgba(0, 0, 0, 0.3); }
 .plus:active, .dock .circ:active { transform: scale(0.97); background: var(--glass-press); }
-.plus svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.plus svg { width: 28px; height: 28px; --ic-b: 3; }
 .dock:not(.search) #qBtn, .dock.search .plus { display: none; }
 
 /* Neue Notiz als breite Pille, Suche als Kreis; Suchmodus tauscht Pille gegen Feld */
@@ -186,11 +183,10 @@ button.sh:active { transform: scale(0.98); }
 .go { position: absolute; right: 12px; bottom: 12px; width: 36px; height: 36px; border-radius: 18px; background: #fff; display: grid; place-items: center; transition: transform 160ms ease-out, opacity 120ms ease; }
 .cmp.on .go { transition: transform 160ms ease-out, opacity 160ms ease 90ms; }
 .go:active { transform: scale(0.95); }
-.go svg { width: 20px; height: 20px; fill: none; stroke: #000; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-.go path { stroke-dasharray: 1; stroke-dashoffset: 0; }
-.go.done path { animation: go-draw 380ms var(--ease-out); }
+.go svg { width: 26px; height: 26px; color: #000; --ic-b: 4; }
+.go.done svg { animation: go-draw 380ms var(--ease-out); }
 .go.done { animation: go-pop 300ms var(--ease-out); }
-@keyframes go-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes go-draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes go-pop { 0% { transform: scale(0.94); } 100% { transform: scale(1); } }
 .dock { transition: opacity 160ms ease; }
 body.composing .dock { opacity: 0; pointer-events: none; }
@@ -216,14 +212,16 @@ body.composing .toaster { bottom: calc(var(--kb, 0px) + 160px + env(safe-area-in
 .sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.45; }
 /* Anheften: Nadel springt an, wenn das Loslassen anheftet */
 .bgL { gap: 8px; }
-.bgL .pin { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform: scale(0.9) rotate(0deg); opacity: 0.6; transition: transform 220ms var(--ease-out), opacity 160ms ease; }
+.bgL .pin { width: 26px; height: 26px; transform: scale(0.9) rotate(0deg); opacity: 0.6; transition: transform 220ms var(--ease-out), opacity 160ms ease; }
 .row.arm .bgL .pin { transform: scale(1.15) rotate(-20deg); opacity: 1; }
-.row.arm .bgL .pin path:first-child { fill: currentColor; }
+.bgL .pin .pf { opacity: 0; }
+.row.arm .bgL .pin .po { opacity: 0; }
+.row.arm .bgL .pin .pf { opacity: 1; }
 /* Kopf etwas tiefer, damit iOS' Abdunklung am oberen Rand die Anzeige nicht verschluckt */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.pill .plink { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pill .plink { display: block; width: 28px; height: 28px; --ic-b: 2.4; }
 .pill .plink .cx { opacity: 0; }
-.pill.busy .plink .lk, .pill.off .plink .lk, .pill.bad .plink .lk { opacity: 0; }
+.pill.off .plink .lk, .pill.bad .plink .lk { opacity: 0; }
 .pill.off .plink .cx, .pill.bad .plink .cx { opacity: 1; }
 .pill.busy .plink { animation: qn-pulse 1.2s ease-in-out infinite; }
 .pill.ok .plink { animation: cb-pop 260ms var(--ease-out); }
